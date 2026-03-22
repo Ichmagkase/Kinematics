@@ -5,6 +5,7 @@ namespace Game.Player
 	public partial class Player : CharacterBody2D
 	{
 		private PlayerSprite _playerSprite;
+		private bool _hasDoubleJumpped = false;
 
 		public override void _Ready()
 		{
@@ -36,10 +37,27 @@ namespace Game.Player
 
 		private Vector2 HandleJump(Vector2 velocity)
 		{
-			bool canJump = IsOnFloor() && Input.IsActionJustPressed(PlayerInputActions.Jump);
-			if (!canJump) return velocity;
+			bool canJump = IsOnFloor() && Input.IsActionPressed(PlayerInputActions.Jump);
+			bool canDoubleJump = !IsOnFloor()
+								&& Input.IsActionJustPressed(PlayerInputActions.Jump)
+								&& !_hasDoubleJumpped
+								&& PlayerConfig.CanDoubleJump;
+			
+			GD.Print($"Can Jump? {canJump}");
+			GD.Print($"Can Double Jump? {canDoubleJump}");
 
-			velocity.Y = PlayerConfig.JumpVelocity;
+			if (!canJump && !canDoubleJump) return velocity;
+			else if (!canJump) _hasDoubleJumpped = true; // Don't double jump again
+			else _hasDoubleJumpped = false; // Allow double jump if this is the first jump
+
+			if (canJump)
+			{
+				velocity.Y = PlayerConfig.JumpVelocity;
+			} 
+			else
+			{
+				velocity.Y = PlayerConfig.JumpVelocity;
+			}
 			return velocity;
 		}
 

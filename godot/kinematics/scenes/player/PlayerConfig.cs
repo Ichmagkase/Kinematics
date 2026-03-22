@@ -6,5 +6,6 @@ namespace Game.Player
 	{
 		public const float Speed = 300.0f;
 		public const float JumpVelocity = -400.0f;
+		public const bool CanDoubleJump = true;
 	}
 }
