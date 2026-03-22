@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="KinectVisionLayer/KinectVisionLayer.vcxproj" />
+  <Project Path="KinectVisionLayer/KinectVisionLayer.vcxproj" Id="fb3f1d2a-ffba-47fa-a5ac-b3084520cc28" />
 </Solution>
