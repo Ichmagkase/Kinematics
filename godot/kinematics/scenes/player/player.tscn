@@ -385,7 +385,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_xehjw")
 }],
-"loop": true,
+"loop": false,
 "name": &"turn_around",
 "speed": 7.0
 }]
@@ -400,8 +400,7 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_27xwf")
-animation = &"idle"
-frame_progress = 0.96378946
+animation = &"turn_around"
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]

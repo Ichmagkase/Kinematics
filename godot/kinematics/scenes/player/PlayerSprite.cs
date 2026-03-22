@@ -6,13 +6,16 @@ namespace Game.Player
 	public partial class PlayerSprite : AnimatedSprite2D
 	{
 		private static String _jumpUpAnimationName = "jump_up";
-		public String jumpUpAnimationName {get => _jumpUpAnimationName;}
+		public String JumpUpAnimationName {get => _jumpUpAnimationName;}
 
 		private static String _jumpDownAnimationName = "jump_down";
-		public String jumpDownAnimationName {get => _jumpDownAnimationName;}
+		public String JumpDownAnimationName {get => _jumpDownAnimationName;}
 
-		private static String _idleAnimationName = "jump_down";
-		public String idleAnimationName {get => _idleAnimationName;}
+		private static String _idleAnimationName = "idle";
+		public String IdleAnimationName {get => _idleAnimationName;}
+
+		private static String _runAnimationName = "run";
+		public String RunAnimationName {get => _runAnimationName;}
 
 		public void JumpUp()
 		{
@@ -21,7 +24,32 @@ namespace Game.Player
 
 		public void JumpDown()
 		{
-			Play(_jumpDownAnimationName);
+		Play(_jumpDownAnimationName);
+		}
+
+		public void FaceLeft()
+		{
+			FlipH = true;
+		}
+
+		public bool IsFacingLeft()
+		{
+			return FlipH == true;
+		}
+
+		public void FaceRight()
+		{
+			FlipH = false;
+		}
+
+		public bool IsFacingRight()
+		{
+			return FlipH == false;
+		}
+
+		public void Run() 
+		{
+			Play(_runAnimationName);
 		}
 
 		public void Idle()
@@ -33,6 +61,7 @@ namespace Game.Player
 		{
 			return Animation;
 		}
+
 
 		public override void _Ready()
 		{
