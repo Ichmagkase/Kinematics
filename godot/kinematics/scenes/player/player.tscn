@@ -218,9 +218,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_d7xyo")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_1",
-"speed": 7.0
+"speed": 16.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -241,9 +241,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_yifbt")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_2",
-"speed": 9.0
+"speed": 16.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -276,9 +276,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4n5ed")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
-"speed": 7.0
+"speed": 16.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -387,7 +387,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"turn_around",
-"speed": 7.0
+"speed": 16.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1rgi"]
@@ -400,7 +400,7 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_27xwf")
-animation = &"turn_around"
+animation = &"attack_1"
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]

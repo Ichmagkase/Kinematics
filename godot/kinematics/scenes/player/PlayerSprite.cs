@@ -17,14 +17,33 @@ namespace Game.Player
 		private static String _runAnimationName = "run";
 		public String RunAnimationName {get => _runAnimationName;}
 
+		private static String _attack1AnimationName = "attack_1";
+		public String Attack1AnimationName {get => _attack1AnimationName;}
+
+		private static String _attack2AnimationName = "attack_2";
+		public String Attack2AnimationName {get => _attack2AnimationName;}
+
+		private static bool _playingAttackingAnimation = false;
+		public bool PlayingAttackingAnimation {get => _playingAttackingAnimation;}
+
+		private void OnAnimationFinished()
+		{
+			if (_playingAttackingAnimation)
+			{
+				_playingAttackingAnimation = false;
+				Idle(); 
+			}
+		}
 		public void JumpUp()
 		{
+			_playingAttackingAnimation = false;
 			Play(_jumpUpAnimationName);
 		}
 
 		public void JumpDown()
 		{
-		Play(_jumpDownAnimationName);
+			_playingAttackingAnimation = false;
+			Play(_jumpDownAnimationName);
 		}
 
 		public void FaceLeft()
@@ -49,11 +68,27 @@ namespace Game.Player
 
 		public void Run() 
 		{
+			if (_playingAttackingAnimation) return;
 			Play(_runAnimationName);
+		}
+
+		public void Attack1() 
+		{
+			if (_playingAttackingAnimation) return;
+			_playingAttackingAnimation = true;
+			Play(_attack1AnimationName);
+		}
+
+		public void Attack2() 
+		{
+			if (_playingAttackingAnimation) return;
+			_playingAttackingAnimation = true;
+			Play(_attack2AnimationName);
 		}
 
 		public void Idle()
 		{
+			if (_playingAttackingAnimation) return;
 			Play(_idleAnimationName);
 		}
 
@@ -61,11 +96,11 @@ namespace Game.Player
 		{
 			return Animation;
 		}
-
-
+ 
 		public override void _Ready()
 		{
 			Idle();
+			AnimationFinished += OnAnimationFinished;
 		}
 
 		public override void _Process(double delta)

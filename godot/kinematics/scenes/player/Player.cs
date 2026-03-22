@@ -18,6 +18,7 @@ namespace Game.Player
 			velocity = HandleGravity(velocity, delta);
 			velocity = HandleJump(velocity);
 			velocity = HandleMovement(velocity);
+			velocity = HandleAttack(velocity);
 
 			UpdateAnimation(velocity);
 
@@ -39,6 +40,22 @@ namespace Game.Player
 			if (!canJump) return velocity;
 
 			velocity.Y = PlayerConfig.JumpVelocity;
+			return velocity;
+		}
+
+		private Vector2 HandleAttack(Vector2 velocity)
+		{
+			if (!IsOnFloor()) return velocity;
+			if (Input.IsActionJustPressed(PlayerInputActions.Attack1))
+			{
+				_playerSprite.Attack1();
+				return velocity;
+			}
+			if  (Input.IsActionJustPressed(PlayerInputActions.Attack2))
+			{
+				_playerSprite.Attack2();
+				return velocity;
+			}
 			return velocity;
 		}
 
@@ -75,14 +92,14 @@ namespace Game.Player
 				if (velocity.X < 0) 
 				{
 						_playerSprite.FaceLeft();
-						_playerSprite.Play(_playerSprite.RunAnimationName);
+						_playerSprite.Run();
 				}
 				if (velocity.X > 0) 
 				{
 						_playerSprite.FaceRight();
-						_playerSprite.Play(_playerSprite.RunAnimationName);	
+						_playerSprite.Run();
 				}
-				_playerSprite.Play(_playerSprite.RunAnimationName);
+				_playerSprite.Run();
 				return;
 			}
 
