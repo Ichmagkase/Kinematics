@@ -1,38 +1,82 @@
 using Godot;
-using System;
 
-public partial class Player : CharacterBody2D
+namespace Game.Player
 {
-	public const float Speed = 300.0f;
-	public const float JumpVelocity = -400.0f;
+	public partial class Player : CharacterBody2D
+	{		
 
-	public override void _PhysicsProcess(double delta)
-	{
-		Vector2 velocity = Velocity;
+		private PlayerSprite _playerSprite;
 
-		// add gravity
-		if (!IsOnFloor())
+		private Vector2 HandlePlayerJumpUp(Vector2 currentVector)
 		{
-			velocity += GetGravity() * (float)delta;
+			currentVector.Y = PlayerConfig.JumpVelocity;
+			_playerSprite.JumpUp();
+			return currentVector;
+		}
+	
+		private Vector2 HandlePlayerJumpDown(Vector2 currentVector, double delta)
+		{
+			_playerSprite.JumpDown();
+			return currentVector;
 		}
 
-		// handle Jump
-		if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
+		public void HandlePlayerCollideWithFloor()
 		{
-			velocity.Y = JumpVelocity;
+			if (_playerSprite.GetCurrentAnimationName() == _playerSprite.jumpDownAnimationName)
+			{
+				_playerSprite.Idle();
+			}
+		}
+		
+		public override void _Ready()
+		{
+			_playerSprite = GetNode<PlayerSprite>("AnimatedSprite2D");
 		}
 
-		Vector2 direction = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-		if (direction != Vector2.Zero)
+		public override void _PhysicsProcess(double delta)
 		{
-			velocity.X = direction.X * Speed;
-		}
-		else
-		{
-			velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-		}
+			Vector2 velocity = Velocity;
 
-		Velocity = velocity;
-		MoveAndSlide();
+			if (!IsOnFloor())
+			{
+				velocity += GetGravity() * (float)delta;
+			}
+
+			if (!IsOnFloor() && velocity.Y >= 0)
+			{
+				velocity = HandlePlayerJumpDown(velocity, delta);
+			}
+
+			if (IsOnFloor())
+			{
+				HandlePlayerCollideWithFloor();
+			}
+
+			if (Input.IsActionJustPressed(PlayerInputActions.Jump) && IsOnFloor())
+			{
+				velocity = HandlePlayerJumpUp(velocity);
+			}
+
+			Vector2 direction = Input.GetVector(
+				PlayerInputActions.MoveLeft,
+				PlayerInputActions.MoveRight,
+				PlayerInputActions.MoveDown,
+				PlayerInputActions.Jump
+			);
+
+			if (direction != Vector2.Zero)
+			{
+				velocity.X = direction.X * PlayerConfig.Speed;
+			}
+			else
+			{
+				velocity.X = Mathf.MoveToward(Velocity.X, 0, PlayerConfig.Speed);
+			}
+
+
+			Velocity = velocity;
+			GD.Print(Velocity);
+			MoveAndSlide();
+		}
 	}
 }

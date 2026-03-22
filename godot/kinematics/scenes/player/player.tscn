@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://xe1o7xwws5sk" path="res://art/player/knight/_Jump.png" id="6_p7tob"]
 [ext_resource type="Texture2D" uid="uid://dixqsfcwspa05" path="res://art/player/knight/_Run.png" id="7_dm7nj"]
 [ext_resource type="Texture2D" uid="uid://0y6tcnk6gteo" path="res://art/player/knight/_TurnAround.png" id="8_3mea3"]
+[ext_resource type="Script" uid="uid://dfud5u5oq2ikq" path="res://scenes/player/PlayerSprite.cs" id="10_h17s1"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7v5gs"]
 atlas = ExtResource("1_s1rgi")
@@ -400,8 +401,8 @@ metadata/_edit_group_ = true
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_27xwf")
 animation = &"idle"
-autoplay = "idle"
 frame_progress = 0.96378946
+script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]
 position = Vector2(-27.5, 114.5)
