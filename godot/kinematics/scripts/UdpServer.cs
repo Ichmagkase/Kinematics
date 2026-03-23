@@ -3,8 +3,8 @@ using System;
 
 public partial class UdpServer : Node
 {	
-	private const string BIND_ADDRESS = "localhost";
-	private const int PORT = 4242;
+	private const string _BIND_ADDRESS = "localhost";
+	private const int _PORT = 4242;
 	
 	private PacketPeerUdp peer = new PacketPeerUdp();
 
@@ -16,10 +16,10 @@ public partial class UdpServer : Node
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Error result = peer.Bind(PORT, BIND_ADDRESS);
+		Error result = peer.Bind(_PORT, _BIND_ADDRESS);
 		if (result != Error.Ok)
 		{
-			PrintErr($"Could not bind to IP address {BIND_ADDRESS} at port {PORT}");
+			PrintErr($"Could not bind to IP address {_BIND_ADDRESS} at port {_PORT}");
 		}
 	}
 
