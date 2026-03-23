@@ -29,8 +29,8 @@ public partial class UdpServer : Node
 		if (peer.GetAvailablePacketCount() > 0)
 		{
 			byte[] packetBytes = peer.GetPacket();
-			string event = System.Text.Encoding.UTF8.GetString(packetBytes);
-			GD.Print($"Event received: {event}");
+			string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes);
+			GD.Print($"Packet received: {packetMsg}");
 		}
 	}
 }
