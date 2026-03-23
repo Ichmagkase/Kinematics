@@ -6,7 +6,7 @@ public partial class UdpServer : Node
 	private const string BIND_ADDRESS = "localhost";
 	private const int PORT = 4242;
 	
-	private PacketPeerUDP peer = new PacketPeerUDP();
+	private PacketPeerUdp peer = new PacketPeerUdp();
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
