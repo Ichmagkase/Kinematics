@@ -102,9 +102,5 @@ namespace Game.Player
 			Idle();
 			AnimationFinished += OnAnimationFinished;
 		}
-
-		public override void _Process(double delta)
-		{
-		}
 	}
 }

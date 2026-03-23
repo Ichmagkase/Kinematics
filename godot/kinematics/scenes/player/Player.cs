@@ -5,10 +5,12 @@ namespace Game.Player
 	public partial class Player : CharacterBody2D
 	{
 		private PlayerSprite _playerSprite;
+		private PlayerConfig _playerConfig;
 		private bool _hasDoubleJumpped = false;
 
 		public override void _Ready()
 		{
+			_playerConfig = GetNode<PlayerConfig>("PlayerConfig");
 			_playerSprite = GetNode<PlayerSprite>("AnimatedSprite2D");
 		}
 
@@ -41,10 +43,7 @@ namespace Game.Player
 			bool canDoubleJump = !IsOnFloor()
 								&& Input.IsActionJustPressed(PlayerInputActions.Jump)
 								&& !_hasDoubleJumpped
-								&& PlayerConfig.CanDoubleJump;
-			
-			GD.Print($"Can Jump? {canJump}");
-			GD.Print($"Can Double Jump? {canDoubleJump}");
+								&& _playerConfig.CanDoubleJump;
 
 			if (!canJump && !canDoubleJump) return velocity;
 			else if (!canJump) _hasDoubleJumpped = true; // Don't double jump again
@@ -52,11 +51,11 @@ namespace Game.Player
 
 			if (canJump)
 			{
-				velocity.Y = PlayerConfig.JumpVelocity;
+				velocity.Y = _playerConfig.JumpVelocity;
 			} 
 			else
 			{
-				velocity.Y = PlayerConfig.JumpVelocity;
+				velocity.Y = _playerConfig.JumpVelocity;
 			}
 			return velocity;
 		}
@@ -87,9 +86,9 @@ namespace Game.Player
 			);
 
 			if (direction != Vector2.Zero)
-				velocity.X = direction.X * PlayerConfig.Speed;
+				velocity.X = direction.X * _playerConfig.Speed;
 			else
-				velocity.X = Mathf.MoveToward(velocity.X, 0, PlayerConfig.Speed);
+				velocity.X = Mathf.MoveToward(velocity.X, 0, _playerConfig.Speed);
 
 			return velocity;
 		}
@@ -105,8 +104,6 @@ namespace Game.Player
 			if (isRising)   { _playerSprite.JumpUp();   return; }
 			if (isMoving)
 			{
-				GD.Print(_playerSprite.IsFacingRight());
-				GD.Print(_playerSprite.IsFacingLeft());
 				if (velocity.X < 0) 
 				{
 						_playerSprite.FaceLeft();

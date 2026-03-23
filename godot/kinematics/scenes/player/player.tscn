@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://dixqsfcwspa05" path="res://art/player/knight/_Run.png" id="7_dm7nj"]
 [ext_resource type="Texture2D" uid="uid://0y6tcnk6gteo" path="res://art/player/knight/_TurnAround.png" id="8_3mea3"]
 [ext_resource type="Script" uid="uid://dfud5u5oq2ikq" path="res://scenes/player/PlayerSprite.cs" id="10_h17s1"]
+[ext_resource type="Script" uid="uid://bokvss4xwxenh" path="res://scenes/player/PlayerBoundBox.cs" id="11_je7p5"]
+[ext_resource type="Script" uid="uid://dyja5x5x314k4" path="res://scenes/player/PlayerConfig.cs" id="12_fm80t"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7v5gs"]
 atlas = ExtResource("1_s1rgi")
@@ -391,18 +393,23 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1rgi"]
-size = Vector2(83, 173)
+size = Vector2(74, 177)
 
 [node name="Player" type="CharacterBody2D" unique_id=165373145]
+position = Vector2(38, 73)
 script = ExtResource("1_5gtgg")
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_27xwf")
-animation = &"attack_1"
+animation = &"idle"
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]
-position = Vector2(-27.5, 114.5)
+position = Vector2(-26, 110.5)
 shape = SubResource("RectangleShape2D_s1rgi")
+script = ExtResource("11_je7p5")
+
+[node name="PlayerConfig" type="Node" parent="." unique_id=1519756736]
+script = ExtResource("12_fm80t")
