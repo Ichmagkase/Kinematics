@@ -7,6 +7,11 @@ public partial class UdpServer : Node
 	private const int PORT = 4242;
 	
 	private PacketPeerUdp peer = new PacketPeerUdp();
+
+	private static void PrintErr(string info)
+	{
+		GD.PrintErr($"UdpServer Error: {info}");
+	}
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -14,7 +19,7 @@ public partial class UdpServer : Node
 		Error result = peer.Bind(PORT, BIND_ADDRESS);
 		if (result != Error.Ok)
 		{
-			GD.PrintErr($"UdpServer Error: {e.Message}");
+			PrintErr($"Could not bind to IP address {BIND_ADDRESS} at port {PORT}");
 		}
 	}
 
