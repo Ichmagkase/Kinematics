@@ -130,8 +130,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine.cpp" />
+    <ClCompile Include="RandomTestInputs.cpp" />
+    <ClCompile Include="sensor.cpp" />
     <ClCompile Include="ipc.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="enum.h" />
+    <ClInclude Include="sensor.h" />
+    <ClInclude Include="ipc.h" />
+    <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
