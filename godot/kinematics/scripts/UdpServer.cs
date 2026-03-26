@@ -3,6 +3,7 @@ using System;
 
 public partial class UdpServer : Node
 {	
+	/*
 	private const string BIND_ADDRESS = "localhost";
 	private const int PORT = 4242;
 	
@@ -28,4 +29,5 @@ public partial class UdpServer : Node
 			GD.Print($"Event received: {event}");
 		}
 	}
+	*/
 }

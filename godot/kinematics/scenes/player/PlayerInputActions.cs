@@ -9,5 +9,6 @@ namespace Game.Player
 		public const string Jump = "move_jump";
 		public const string Attack1 = "attack_1";
 		public const string Attack2 = "attack_2";
+		public const string Block = "block";
 	}
 }
