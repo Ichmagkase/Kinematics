@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Winsock.h>
 #include <WS2tcpip.h>
+#include "enum.h"
 
 class IPC {
 public:
@@ -20,18 +21,30 @@ public:
 			exit(1);
 		}
 
-		sockaddr_in endpoint;
 		endpoint.sin_family = AF_INET;
 		endpoint.sin_port = htons(12345);
 		inet_pton(AF_INET, "127.0.0.1", &endpoint.sin_addr);
 	};
 
-	// int sendEventPayload(Event e) {}
+	int sendEventPayload(enum Event e) {
+		int sendResult = sendto(ipc_socket, actions[e], sizeof(actions[e]), 0, (sockaddr*)&endpoint, sizeof(endpoint));
+		if (sendResult == SOCKET_ERROR) {
+			std::cout << "sendto failed with error: " << WSAGetLastError() << std::endl;
+		}
+		else {
+			std::cout << "Sent" << sendResult << " bytes" << std::endl;
+		}
+	}
 
 	~IPC() {
 		closesocket(ipc_socket);
 		WSACleanup();
 	}
 private:
+	static const char* actions[5];
 	static SOCKET ipc_socket;
+	static sockaddr_in endpoint;
 };
+
+const char* IPC::actions[] = { "move_jump", "attack_1", "move_right", "move_left", "block" };
+
