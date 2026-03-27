@@ -22,6 +22,7 @@ namespace Game.Player
 			velocity = HandleJump(velocity);
 			velocity = HandleMovement(velocity);
 			velocity = HandleAttack(velocity);
+			velocity = HandleBlock(velocity);
 
 			UpdateAnimation(velocity);
 
@@ -73,6 +74,26 @@ namespace Game.Player
 				_playerSprite.Attack2();
 				return velocity;
 			}
+			return velocity;
+		}
+
+		private Vector2 HandleBlock(Vector2 velocity)
+		{
+			if (Input.IsActionJustPressed(PlayerInputActions.Block))
+			{
+				_playerSprite.Block();
+				return velocity;
+			}
+			else if (Input.IsActionPressed(PlayerInputActions.Block) && _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
+			{
+				return velocity;
+	
+			} 
+			else if (_playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
+			{
+				_playerSprite.EndBlock();
+			}
+
 			return velocity;
 		}
 

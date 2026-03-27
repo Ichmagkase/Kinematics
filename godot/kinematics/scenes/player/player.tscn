@@ -81,27 +81,23 @@ region = Rect2(384, 0, 96, 62)
 atlas = ExtResource("4_ugbui")
 region = Rect2(480, 0, 96, 62)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8qxvo"]
-atlas = ExtResource("5_fcs02")
-region = Rect2(0, 0, 96, 63)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5q8fn"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_gx1jg"]
 atlas = ExtResource("5_fcs02")
 region = Rect2(96, 0, 96, 63)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wva7c"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_fcs02"]
 atlas = ExtResource("5_fcs02")
 region = Rect2(192, 0, 96, 63)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_7obkq"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_myrg7"]
 atlas = ExtResource("5_fcs02")
 region = Rect2(288, 0, 96, 63)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vo27k"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_kvlxm"]
 atlas = ExtResource("5_fcs02")
 region = Rect2(384, 0, 96, 63)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_genst"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_uf5tr"]
 atlas = ExtResource("5_fcs02")
 region = Rect2(480, 0, 96, 63)
 
@@ -286,26 +282,23 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_8qxvo")
+"texture": SubResource("AtlasTexture_gx1jg")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5q8fn")
+"texture": SubResource("AtlasTexture_fcs02")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_wva7c")
+"texture": SubResource("AtlasTexture_myrg7")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_7obkq")
+"texture": SubResource("AtlasTexture_kvlxm")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_vo27k")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_genst")
+"texture": SubResource("AtlasTexture_uf5tr")
 }],
-"loop": true,
+"loop": false,
 "name": &"block",
-"speed": 16.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -430,7 +423,7 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_lvxji")
-animation = &"idle"
+animation = &"block"
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]
