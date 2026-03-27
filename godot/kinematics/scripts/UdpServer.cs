@@ -30,7 +30,17 @@ public partial class UdpServer : Node
 		{
 			byte[] packetBytes = peer.GetPacket();
 			string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes);
-			GD.Print($"Packet received: {packetMsg}");
+
+			// Packet message format [player, integer 1-indexed]|[action]
+			string[] playerAction = packetMsg.Split("|");
+			if (playerAction[0] == "1")
+			{
+				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneGesture, playerAction[1]);
+			}
+			else if (playerAction[1] == "2")
+			{
+				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoGesture, playerAction[1]);
+			}
 		}
 	}
 }
