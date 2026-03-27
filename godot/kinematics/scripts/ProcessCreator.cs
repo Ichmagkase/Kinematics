@@ -1,32 +1,35 @@
 using Godot;
 using System;
 
-public partial class ProcessCreator : Node
+namespace Game.Processes
 {
-	private const string KINECT_BRIDGE_FILENAME = "KinectVisionLayer.exe";
-
-	private string CreatePathInExecDir(string filename)
+	public partial class ProcessCreator : Node
 	{
-		return OS.GetExecutablePath().GetBaseDir() + "/" + filename;
-	}
+		private const string KINECT_BRIDGE_FILENAME = "KinectVisionLayer.exe";
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		// Only automatically create bridge process if running exported executable.
-		if (!OS.HasFeature("editor"))
+		private string CreatePathInExecDir(string filename)
 		{
-			string path = CreatePathInExecDir(KINECT_BRIDGE_FILENAME);
-			int pid = OS.CreateProcess(path, []);
-			if (pid == -1)
+			return OS.GetExecutablePath().GetBaseDir() + "/" + filename;
+		}
+
+		// Called when the node enters the scene tree for the first time.
+		public override void _Ready()
+		{
+			// Only automatically create bridge process if running exported executable.
+			if (!OS.HasFeature("editor"))
 			{
-				GD.PrintErr($"Could not create {KINECT_BRIDGE_FILENAME} process");
+				string path = CreatePathInExecDir(KINECT_BRIDGE_FILENAME);
+				int pid = OS.CreateProcess(path, []);
+				if (pid == -1)
+				{
+					GD.PrintErr($"Could not create {KINECT_BRIDGE_FILENAME} process");
+				}
 			}
 		}
-	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
+		// Called every frame. 'delta' is the elapsed time since the previous frame.
+		public override void _Process(double delta)
+		{
+		}
 	}
 }
