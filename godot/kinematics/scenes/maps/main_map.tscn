@@ -337,6 +337,7 @@ format = 2
 [node name="Parallax2D" type="Parallax2D" parent="." unique_id=448000082]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Parallax2D" unique_id=810765278]
+modulate = Color(0.5370987, 0.5370987, 0.5370987, 1)
 position = Vector2(-764.4375, 5.0937805)
 scale = Vector2(4.9071875, 4.9591665)
 sprite_frames = SubResource("SpriteFrames_dfl2o")

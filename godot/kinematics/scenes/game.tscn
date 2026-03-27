@@ -191,5 +191,5 @@ position = Vector2(1730, 511)
 tile_set = SubResource("TileSet_p57ef")
 
 [node name="Player" parent="." unique_id=165373145 instance=ExtResource("1_uwrxv")]
-position = Vector2(84, 522)
+position = Vector2(68, 939)
 scale = Vector2(1.2, 1.2)
