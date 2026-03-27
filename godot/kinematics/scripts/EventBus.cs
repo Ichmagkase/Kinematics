@@ -4,10 +4,10 @@ using System;
 public partial class EventBus : Node
 {
 	[Signal]
-	public delegate void PlayerOneGestureEventHandler(string gesture);
+	public delegate void PlayerOneActionEventHandler(string action);
 
 	[Signal]
-	public delegate void PlayerTwoGestureEventHandler(string gesture);
+	public delegate void PlayerTwoActionEventHandler(string action);
 
 	public static EventBus Instance { get; private set; }
 

@@ -35,11 +35,11 @@ public partial class UdpServer : Node
 			string[] playerAction = packetMsg.Split("|");
 			if (playerAction[0] == "1")
 			{
-				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneGesture, playerAction[1]);
+				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneAction, playerAction[1]);
 			}
-			else if (playerAction[1] == "2")
+			else if (playerAction[0] == "2")
 			{
-				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoGesture, playerAction[1]);
+				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, playerAction[1]);
 			}
 		}
 	}
