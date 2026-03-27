@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bpi1d47gsq0x1" path="res://scenes/maps/main_map.tscn" id="2_lnu2h"]
 [ext_resource type="Texture2D" uid="uid://c4g3chk8p8i7x" path="res://art/maps/main/world_tileset.png" id="3_lbhrr"]
 [ext_resource type="Script" uid="uid://cnm34hsheqxj2" path="res://scripts/UdpServer.cs" id="4_lbhrr"]
+[ext_resource type="Script" uid="uid://dgh4csgf8o17w" path="res://scripts/ProcessCreator.cs" id="5_iywne"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_yqjtg"]
 normal = Vector2(0, 1)
@@ -197,3 +198,6 @@ scale = Vector2(1.2, 1.2)
 
 [node name="UdpServer" type="Node" parent="." unique_id=447794167]
 script = ExtResource("4_lbhrr")
+
+[node name="ProcessCreator" type="Node" parent="." unique_id=1115231477]
+script = ExtResource("5_iywne")
