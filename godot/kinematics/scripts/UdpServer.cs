@@ -1,45 +1,48 @@
 using Godot;
 using System;
 
-public partial class UdpServer : Node
-{	
-	private const string _BIND_ADDRESS = "localhost";
-	private const int _PORT = 4242;
-	
-	private PacketPeerUdp peer = new PacketPeerUdp();
+namespace Game.Client.Udp
+{
+	public partial class UdpServer : Node
+	{
+		private const string BIND_ADDRESS = "localhost";
+		private const int PORT = 4242;
 
-	private static void PrintErr(string info)
-	{
-		GD.PrintErr($"UdpServer Error: {info}");
-	}
-	
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		Error result = peer.Bind(_PORT, _BIND_ADDRESS);
-		if (result != Error.Ok)
+		private PacketPeerUdp peer = new PacketPeerUdp();
+
+		private static void PrintErr(string info)
 		{
-			PrintErr($"Could not bind to IP address {_BIND_ADDRESS} at port {_PORT}");
+			GD.PrintErr($"UdpServer Error: {info}");
 		}
-	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		if (peer.GetAvailablePacketCount() > 0)
+		// Called when the node enters the scene tree for the first time.
+		public override void _Ready()
 		{
-			byte[] packetBytes = peer.GetPacket();
-			string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes);
-
-			// Packet message format [player, integer 1-indexed]|[action]
-			string[] playerAction = packetMsg.Split("|");
-			if (playerAction[0] == "1")
+			Error result = peer.Bind(PORT, BIND_ADDRESS);
+			if (result != Error.Ok)
 			{
-				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneAction, playerAction[1]);
+				PrintErr($"Could not bind to IP address {BIND_ADDRESS} at port {PORT}");
 			}
-			else if (playerAction[0] == "2")
+		}
+
+		// Called every frame. 'delta' is the elapsed time since the previous frame.
+		public override void _Process(double delta)
+		{
+			if (peer.GetAvailablePacketCount() > 0)
 			{
-				EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, playerAction[1]);
+				byte[] packetBytes = peer.GetPacket();
+				string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes);
+
+				// Packet message format [player, integer 1-indexed]|[action]
+				string[] playerAction = packetMsg.Split("|");
+				if (playerAction[0] == "1")
+				{
+					EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneAction, playerAction[1]);
+				}
+				else if (playerAction[0] == "2")
+				{
+					EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, playerAction[1]);
+				}
 			}
 		}
 	}
