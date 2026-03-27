@@ -6,6 +6,8 @@ namespace Game.Processes
 	public partial class ProcessCreator : Node
 	{
 		private const string KINECT_BRIDGE_FILENAME = "KinectVisionLayer.exe";
+		
+		private const string SERVICE_NAME = "ProcessCreator";
 
 		private string CreatePathInExecDir(string filename)
 		{
@@ -22,7 +24,9 @@ namespace Game.Processes
 				int pid = OS.CreateProcess(path, []);
 				if (pid == -1)
 				{
-					GD.PrintErr($"Could not create {KINECT_BRIDGE_FILENAME} process");
+					Game.Utils.Logger.PrintErr(
+						SERVICE_NAME, $"Could not create {KINECT_BRIDGE_FILENAME} process"
+					);
 				}
 			}
 		}
