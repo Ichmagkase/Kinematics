@@ -1,11 +1,11 @@
 using Godot;
 using System;
 
-namespace Game.Client.Udp
+namespace Game.Server.Udp
 {
 	public partial class UdpServer : Node
 	{
-		private const string BIND_ADDRESS = "localhost";
+		private const string BIND_ADDRESS = "127.0.0.1";
 		private const int PORT = 4242;
 
 		private PacketPeerUdp peer = new PacketPeerUdp();
