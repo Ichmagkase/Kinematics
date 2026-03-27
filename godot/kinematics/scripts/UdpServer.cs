@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 namespace Game.Server.Udp
 {
@@ -7,6 +8,10 @@ namespace Game.Server.Udp
 	{
 		private const string BIND_ADDRESS = "127.0.0.1";
 		private const int PORT = 4242;
+
+		private HashSet<string> actions = new HashSet<string>() { 
+			"move_left", "move_right", "move_jump", "move_down", "attack_1", "attack_2", "block"
+		};
 
 		private PacketPeerUdp peer = new PacketPeerUdp();
 
@@ -31,10 +36,19 @@ namespace Game.Server.Udp
 			if (peer.GetAvailablePacketCount() > 0)
 			{
 				byte[] packetBytes = peer.GetPacket();
-				string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes);
+				string packetMsg = System.Text.Encoding.UTF8.GetString(packetBytes).TrimEnd('\n');
 
 				// Packet message format [player, integer 1-indexed]|[action]
 				string[] playerAction = packetMsg.Split("|");
+				if (playerAction.Length != 2)
+				{
+					PrintErr($"Message not in correct format: {packetMsg}");
+				}
+				else if (playerAction[0] != "0" || playerAction[0] != "1" || !actions.Contains(playerAction[1]))
+				{
+					PrintErr($"Message contains malformed input: {packetMsg}");
+				}
+
 				if (playerAction[0] == "1")
 				{
 					EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerOneAction, playerAction[1]);
