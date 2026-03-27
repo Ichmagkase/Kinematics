@@ -1,31 +1,31 @@
 using Godot;
 using System;
 
-public partial class UdpServer : Node
-{	
-	private const string BIND_ADDRESS = "localhost";
-	private const int PORT = 4242;
-	
-	private PacketPeerUDP peer = new PacketPeerUDP();
-	
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
+namespace Game.Client.UDP
+{
+	public partial class UdpServer : Node
 	{
-		Error result = peer.Bind(PORT, BIND_ADDRESS);
-		if (result != Error.Ok)
-		{
-			GD.PrintErr($"UdpServer Error: {e.Message}");
-		}
-	}
+		private const string BIND_ADDRESS = "localhost";
+		private const int PORT = 4242;
+		private PacketPeerUdp peer = new PacketPeerUdp();
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		if (peer.GetAvailablePacketCount() > 0)
+		public override void _Ready()
 		{
-			byte[] packetBytes = peer.GetPacket();
-			string event = System.Text.Encoding.UTF8.GetString(packetBytes);
-			GD.Print($"Event received: {event}");
+			Error result = peer.Bind(PORT, BIND_ADDRESS);
+			if (result != Error.Ok)
+			{
+				GD.PrintErr($"UdpServer Error: Failed to bind, code: {result}");
+			}
+		}
+
+		public override void _Process(double delta)
+		{
+			if (peer.GetAvailablePacketCount() > 0)
+			{
+				byte[] packetBytes = peer.GetPacket();
+				string receivedEvent = System.Text.Encoding.UTF8.GetString(packetBytes);
+				GD.Print($"Event received: {receivedEvent}");
+			}
 		}
 	}
 }
