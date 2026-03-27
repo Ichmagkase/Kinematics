@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Game.Client.Udp
+namespace Game.Server.Udp
 {
 	public partial class UdpServer : Node
 	{
