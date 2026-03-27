@@ -1,48 +1,195 @@
 [gd_scene format=3 uid="uid://b5703equhpmi3"]
 
 [ext_resource type="PackedScene" uid="uid://brppoayiinjpa" path="res://scenes/player/player.tscn" id="1_uwrxv"]
-
-[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_uwrxv"]
-distance = -401.0
+[ext_resource type="PackedScene" uid="uid://bpi1d47gsq0x1" path="res://scenes/maps/main_map.tscn" id="2_lnu2h"]
+[ext_resource type="Texture2D" uid="uid://c4g3chk8p8i7x" path="res://art/maps/main/world_tileset.png" id="3_lbhrr"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_yqjtg"]
-normal = Vector2(-0.9999983, 0.0018691557)
-distance = -557.9619
+normal = Vector2(0, 1)
+distance = 1.0
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_lnu2h"]
-normal = Vector2(0.018178813, 0.9998348)
-distance = 0.5699176
+normal = Vector2(1, 0)
+distance = -2.0
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_lbhrr"]
-normal = Vector2(0.999635, -0.027017161)
+distance = -4.0
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_iywne"]
+normal = Vector2(-1, 0)
+distance = 3.0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_iywne"]
+texture = ExtResource("3_lbhrr")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+11:0/0 = 0
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+9:1/0 = 0
+10:1/0 = 0
+11:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+9:2/0 = 0
+10:2/0 = 0
+11:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+8:3/0 = 0
+9:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+9:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+3:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+8:7/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+4:8/0 = 0
+5:8/0 = 0
+6:8/0 = 0
+7:8/0 = 0
+8:8/0 = 0
+0:9/0 = 0
+1:9/0 = 0
+2:9/0 = 0
+3:9/0 = 0
+4:9/0 = 0
+5:9/0 = 0
+6:9/0 = 0
+7:9/0 = 0
+0:10/0 = 0
+1:10/0 = 0
+2:10/0 = 0
+3:10/0 = 0
+4:10/0 = 0
+6:10/0 = 0
+0:11/0 = 0
+1:11/0 = 0
+2:11/0 = 0
+3:11/0 = 0
+4:11/0 = 0
+5:11/0 = 0
+0:12/0 = 0
+1:12/0 = 0
+2:12/0 = 0
+3:12/0 = 0
+4:12/0 = 0
+0:13/0 = 0
+1:13/0 = 0
+2:13/0 = 0
+3:13/0 = 0
+4:13/0 = 0
+5:13/0 = 0
+0:14/0 = 0
+1:14/0 = 0
+2:14/0 = 0
+3:14/0 = 0
+4:14/0 = 0
+0:15/0 = 0
+1:15/0 = 0
+2:15/0 = 0
+3:15/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_p57ef"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_iywne")
 
 [node name="Game" type="Node2D" unique_id=964767718]
-
-[node name="Player" parent="." unique_id=165373145 instance=ExtResource("1_uwrxv")]
-position = Vector2(5, -33)
+position = Vector2(16, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=779970502]
-position = Vector2(-17, 77)
+position = Vector2(-17, 88)
+anchor_mode = 0
 
-[node name="Floor" type="StaticBody2D" parent="." unique_id=1257505046]
+[node name="TopBound" type="StaticBody2D" parent="Camera2D" unique_id=1478230609]
+position = Vector2(592, 0)
 
-[node name="FloorCollisionShape" type="CollisionShape2D" parent="Floor" unique_id=1829864323]
-shape = SubResource("WorldBoundaryShape2D_uwrxv")
-
-[node name="Right-Wall" type="StaticBody2D" parent="." unique_id=1762541206]
-
-[node name="RightWallCollisionShape" type="CollisionShape2D" parent="Right-Wall" unique_id=2015839624]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/TopBound" unique_id=858356091]
 shape = SubResource("WorldBoundaryShape2D_yqjtg")
 
-[node name="Ceiling" type="StaticBody2D" parent="." unique_id=241887196]
+[node name="LeftBound" type="StaticBody2D" parent="Camera2D" unique_id=337019969]
 
-[node name="CeilingCollisionShape" type="CollisionShape2D" parent="Ceiling" unique_id=1260539590]
-position = Vector2(2, -250)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/LeftBound" unique_id=1763281463]
+position = Vector2(1, 980)
 shape = SubResource("WorldBoundaryShape2D_lnu2h")
 
-[node name="Left-Wall" type="StaticBody2D" parent="." unique_id=2004398435]
-position = Vector2(-596, 250)
+[node name="BottomBound" type="StaticBody2D" parent="Camera2D" unique_id=1567439913]
+position = Vector2(970, 1076)
 
-[node name="LeftWallCollision" type="CollisionShape2D" parent="Left-Wall" unique_id=1862614585]
-position = Vector2(2, -253)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/BottomBound" unique_id=636288533]
 shape = SubResource("WorldBoundaryShape2D_lbhrr")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Camera2D" unique_id=457511942]
+position = Vector2(1923, 481)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera2D/StaticBody2D" unique_id=1310191317]
+position = Vector2(2, 30)
+shape = SubResource("WorldBoundaryShape2D_iywne")
+
+[node name="main-map" parent="Camera2D" unique_id=1408385878 instance=ExtResource("2_lnu2h")]
+position = Vector2(1730, 511)
+tile_set = SubResource("TileSet_p57ef")
+
+[node name="Player" parent="." unique_id=165373145 instance=ExtResource("1_uwrxv")]
+position = Vector2(68, 939)
+scale = Vector2(1.2, 1.2)
