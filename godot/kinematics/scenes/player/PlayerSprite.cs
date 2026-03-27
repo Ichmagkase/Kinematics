@@ -23,8 +23,14 @@ namespace Game.Player
 		private static String _attack2AnimationName = "attack_2";
 		public String Attack2AnimationName {get => _attack2AnimationName;}
 
+		private static String _blockAnimationName = "block";
+		public String  BlockAnimationName {get => _blockAnimationName;}
+
 		private static bool _playingAttackingAnimation = false;
 		public bool PlayingAttackingAnimation {get => _playingAttackingAnimation;}
+
+		private static bool _playingBlockingAnimation = false;
+		public bool PlayingBlockingAnimation {get => _playingBlockingAnimation;}
 
 		private void OnAnimationFinished()
 		{
@@ -68,27 +74,40 @@ namespace Game.Player
 
 		public void Run() 
 		{
-			if (_playingAttackingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			Play(_runAnimationName);
 		}
 
 		public void Attack1() 
 		{
-			if (_playingAttackingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack1AnimationName);
 		}
 
 		public void Attack2() 
 		{
-			if (_playingAttackingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack2AnimationName);
 		}
 
+		public void Block() 
+		{
+			_playingAttackingAnimation = false;
+			_playingBlockingAnimation = true;
+			Play(_blockAnimationName);
+		}
+
+		public void EndBlock()
+        {
+            _playingBlockingAnimation = false;
+			Idle();
+        }
+
 		public void Idle()
 		{
-			if (_playingAttackingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			Play(_idleAnimationName);
 		}
 
