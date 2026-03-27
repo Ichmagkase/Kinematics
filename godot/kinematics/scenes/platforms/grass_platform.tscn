@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://csc2dci56ktgf"]
+
+[ext_resource type="Texture2D" uid="uid://dl2p4gnlmeh2g" path="res://art/maps/main/platforms.png" id="1_fepjy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x127k"]
+size = Vector2(30, 9)
+
+[node name="Grass Platform" type="AnimatableBody2D" unique_id=454118454]
+scale = Vector2(7, 7)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1005536946]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_x127k")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=569889138]
+texture = ExtResource("1_fepjy")
+region_enabled = true
+region_rect = Rect2(17, 0, 30, 10)

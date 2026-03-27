@@ -430,8 +430,7 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_lvxji")
-animation = &"jump_down"
-frame_progress = 1.0
+animation = &"idle"
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]

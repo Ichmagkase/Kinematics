@@ -155,6 +155,7 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_iywne")
 
 [node name="Game" type="Node2D" unique_id=964767718]
+position = Vector2(16, 1)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=779970502]
 position = Vector2(-17, 88)
@@ -185,10 +186,10 @@ position = Vector2(1923, 481)
 position = Vector2(2, 30)
 shape = SubResource("WorldBoundaryShape2D_iywne")
 
-[node name="main-map" parent="." unique_id=1408385878 instance=ExtResource("2_lnu2h")]
-visible = false
-position = Vector2(1717, 482)
+[node name="main-map" parent="Camera2D" unique_id=1408385878 instance=ExtResource("2_lnu2h")]
+position = Vector2(1730, 511)
 tile_set = SubResource("TileSet_p57ef")
 
 [node name="Player" parent="." unique_id=165373145 instance=ExtResource("1_uwrxv")]
-position = Vector2(190, 824)
+position = Vector2(84, 522)
+scale = Vector2(1.2, 1.2)
