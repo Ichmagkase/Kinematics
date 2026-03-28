@@ -6,10 +6,12 @@ namespace Game
 	public partial class HomeButton : Node
 	{
 		private PackedScene _mainMenuScene;
+		private GlobalConfig _config;
 
 		public override void _Ready()
 		{
-			_mainMenuScene = GD.Load<PackedScene>(Config.HomeScenePath);
+			_config = GlobalConfig.Instance;
+			_mainMenuScene = GD.Load<PackedScene>(_config.HomeScenePath);
 		}
 
 		public void _OnPressed()

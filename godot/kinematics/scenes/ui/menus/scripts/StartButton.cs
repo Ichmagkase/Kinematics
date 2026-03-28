@@ -4,10 +4,14 @@ namespace Game.Menu
 {
 	public partial class StartButton : Button
 	{
-		PackedScene nextScene = GD.Load<PackedScene>(Config.GameScenePath);
+		private GlobalConfig _config;
+		PackedScene nextScene;
 
 		public void _OnPressed()
 		{
+
+			_config = GlobalConfig.Instance;
+			nextScene = GD.Load<PackedScene>(_config.GameScenePath);
 			GetTree().ChangeSceneToPacked(nextScene);
 		}
 	}

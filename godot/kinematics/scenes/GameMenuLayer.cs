@@ -7,6 +7,7 @@ namespace Game
 
 		private PackedScene pauseMenu;
 		private Control pauseMenuInstance;
+		private GlobalConfig _config;
 
 		private void HandleGamePause()
 		{
@@ -31,15 +32,15 @@ namespace Game
 		public override void _Ready()
 		{
 			
-			pauseMenu = GD.Load<PackedScene>(Config.PauseScenePath);
+			_config = _config = GlobalConfig.Instance;
+			pauseMenu = GD.Load<PackedScene>(_config.PauseScenePath);
 			ProcessMode = ProcessModeEnum.Always;
 		}
 
 		public override void _Process(double delta)
 		{
-			if (Input.IsActionJustPressed(Config.PauseActionName))
+			if (Input.IsActionJustPressed(_config.PauseActionName))
 			{
-				GD.Print("Pausing!");
 				HandleGamePause();
 			}
 			

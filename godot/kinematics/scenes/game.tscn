@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://brppoayiinjpa" path="res://scenes/player/player.tscn" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://bpi1d47gsq0x1" path="res://scenes/maps/main_map.tscn" id="2_lnu2h"]
 [ext_resource type="Texture2D" uid="uid://c4g3chk8p8i7x" path="res://art/maps/main/world_tileset.png" id="3_lbhrr"]
+[ext_resource type="AudioStream" uid="uid://dh7hvhb3ds6a1" path="res://music/themes/battle-theme-main.wav" id="5_iywne"]
+[ext_resource type="Script" uid="uid://bdcoblocbytia" path="res://scenes/audio/scripts/GameAudioPlayer.cs" id="6_u5sy4"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_yqjtg"]
 normal = Vector2(0, 1)
@@ -159,7 +161,6 @@ sources/0 = SubResource("TileSetAtlasSource_iywne")
 script = ExtResource("1_lbhrr")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=779970502]
-position = Vector2(-17, 88)
 anchor_mode = 0
 
 [node name="TopBound" type="StaticBody2D" parent="Camera2D" unique_id=1478230609]
@@ -192,5 +193,12 @@ position = Vector2(1717, 511)
 tile_set = SubResource("TileSet_p57ef")
 
 [node name="Player" parent="." unique_id=165373145 instance=ExtResource("1_uwrxv")]
-position = Vector2(65, 942.00006)
+position = Vector2(75, 900.00006)
 scale = Vector2(1.2, 1.2)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=2034723440]
+position = Vector2(-46, 46)
+stream = ExtResource("5_iywne")
+volume_db = 5.0
+autoplay = true
+script = ExtResource("6_u5sy4")
