@@ -9,16 +9,13 @@ namespace Game.Server.Udp
 		private const string BIND_ADDRESS = "127.0.0.1";
 		private const int PORT = 4242;
 
+		private const string SERVICE_NAME = "UdpServer";
+
 		private HashSet<string> actions = new HashSet<string>() { 
 			"move_left", "move_right", "move_jump", "move_down", "attack_1", "attack_2", "block"
 		};
 
 		private PacketPeerUdp peer = new PacketPeerUdp();
-
-		private static void PrintErr(string info)
-		{
-			GD.PrintErr($"UdpServer Error: {info}");
-		}
 
 		// Called when the node enters the scene tree for the first time.
 		public override void _Ready()
@@ -26,7 +23,9 @@ namespace Game.Server.Udp
 			Error result = peer.Bind(PORT, BIND_ADDRESS);
 			if (result != Error.Ok)
 			{
-				PrintErr($"Could not bind to IP address {BIND_ADDRESS} at port {PORT}");
+				Game.Utils.Logger.PrintErr(
+					SERVICE_NAME, $"Could not bind to IP address {BIND_ADDRESS} at port {PORT}"
+				);
 			}
 		}
 
@@ -42,11 +41,15 @@ namespace Game.Server.Udp
 				string[] playerAction = packetMsg.Split("|");
 				if (playerAction.Length != 2)
 				{
-					PrintErr($"Message not in correct format: {packetMsg}");
+					Game.Utils.Logger.PrintErr(
+						SERVICE_NAME, $"Message not in correct format: {packetMsg}"
+					);
 				}
 				else if (playerAction[0] != "0" || playerAction[0] != "1" || !actions.Contains(playerAction[1]))
 				{
-					PrintErr($"Message contains malformed input: {packetMsg}");
+					Game.Utils.Logger.PrintErr(
+						SERVICE_NAME, $"Message contains malformed input: {packetMsg}"
+					);
 				}
 
 				if (playerAction[0] == "1")
