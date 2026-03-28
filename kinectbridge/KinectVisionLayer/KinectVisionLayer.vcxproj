@@ -130,16 +130,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="RandomTestInputs.cpp" />
+    <ClCompile Include="testdata.cpp" />
     <ClCompile Include="sensor.cpp" />
     <ClCompile Include="ipc.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="enum.h" />
+    <ClInclude Include="data.h" />
     <ClInclude Include="sensor.h" />
     <ClInclude Include="ipc.h" />
     <ClInclude Include="test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\HandRaised2.gbd">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
