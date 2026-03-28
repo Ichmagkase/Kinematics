@@ -1,16 +1,17 @@
 #pragma once
+#include <string>
 #include <winsock2.h>
 #include <WS2tcpip.h>
-#include "enum.h"
+#include "data.h"
 
 class IPC {
 public:
 	IPC();
-	int sendEventPayload(enum Event e);
+	int sendEventPayload(struct Data e);
 	~IPC();
 
 private:
-	static const char* actions[5];
+	static const std::string actions[5];
 	static SOCKET ipc_socket;
 	static sockaddr_in endpoint;
 };
