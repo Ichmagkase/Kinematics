@@ -1,2 +1,2 @@
 #pragma once
-enum Event getRandomEvent();
+struct Data getRandomData();

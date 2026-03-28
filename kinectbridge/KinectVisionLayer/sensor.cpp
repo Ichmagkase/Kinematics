@@ -1,126 +1,223 @@
 #include <iostream>
+#include <string>
+#include <functional>
+#include <map>
 #include <Kinect.h>
+#include <Kinect.VisualGestureBuilder.h>
+#include "sensor.h"
 
-class Sensor {
-public:
-	Sensor() {
-		std::cout << "Kinect Person Detection Program" << std::endl;
+#pragma comment(lib, "Kinect20.lib")
+#pragma comment(lib, "Kinect20.VisualGestureBuilder.lib")
 
-		// Get the default Kinect sensor
-		IKinectSensor* pSensor = nullptr;
-		if (FAILED(GetDefaultKinectSensor(&pSensor))) {
-			std::cerr << "Failed to get default Kinect sensor" << std::endl;
-			exit(1);
-		}
+#define MAX_PLAYERS 2
 
-		if (!pSensor) {
-			std::cerr << "No Kinect sensor found" << std::endl;
-			exit(1);
-		}
+Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor(nullptr), 
+	pGestureFrameSource(nullptr), pGestureFrameReader(nullptr), pGestureDatabase(nullptr),
+	pGestures(nullptr), gestureCount(0) {
+	std::cout << "Kinect Person Detection Program" << std::endl;
 
-		// Open the sensor
-		if (FAILED(pSensor->Open())) {
-			std::cerr << "Failed to open Kinect sensor" << std::endl;
-			pSensor->Release();
-			exit(1);
-		}
+	// Get the default Kinect sensor
+	if (FAILED(GetDefaultKinectSensor(&pSensor))) {
+		std::cerr << "Failed to get default Kinect sensor" << std::endl;
+		exit(1);
+	}
 
-		// Get the body frame source
-		IBodyFrameSource* pBodyFrameSource = nullptr;
-		if (FAILED(pSensor->get_BodyFrameSource(&pBodyFrameSource))) {
-			std::cerr << "Failed to get body frame source" << std::endl;
-			pSensor->Release();
-			exit(1);
-		}
+	if (!pSensor) {
+		std::cerr << "No Kinect sensor found" << std::endl;
+		exit(1);
+	}
 
-		// Create body frame reader
-		IBodyFrameReader* pBodyFrameReader = nullptr;
-		if (FAILED(pBodyFrameSource->OpenReader(&pBodyFrameReader))) {
-			std::cerr << "Failed to open body frame reader" << std::endl;
-			pBodyFrameSource->Release();
-			pSensor->Release();
-			exit(1);
-		}
+	// Open the sensor
+	if (FAILED(pSensor->Open())) {
+		std::cerr << "Failed to open Kinect sensor" << std::endl;
+		pSensor->Release();
+		exit(1);
+	}
 
-		std::cout << "Kinect sensor initialized successfully" << std::endl;
-	};
+	// Get the body frame source
+	if (FAILED(pSensor->get_BodyFrameSource(&pBodyFrameSource))) {
+		std::cerr << "Failed to get body frame source" << std::endl;
+		pSensor->Release();
+		exit(1);
+	}
 
-	int listen() {
-		std::cout << "Listening for persons..." << std::endl;
+	// Create body frame reader
+	if (FAILED(pBodyFrameSource->OpenReader(&pBodyFrameReader))) {
+		std::cerr << "Failed to open body frame reader" << std::endl;
+		pBodyFrameSource->Release();
+		pSensor->Release();
+		exit(1);
+	}
 
-		// Detection loop
-		bool bPersonDetected = false;
-		int frameCount = 0;
+	std::cout << "Kinect sensor initialized successfully" << std::endl;
 
-		HandState leftHandState = HandState_Unknown, rightHandState = HandState_Unknown;
-		HandState previousLeftHandState = HandState_Unknown, previousRightHandState = HandState_Unknown;
+	// Load gesture database
+	//IVisualGestureBuilderDatabase* pGestureDatabase = nullptr;
 
-		TrackingConfidence leftHandConfidence, rightHandConfidence;
+	//if (FAILED(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"HandRaised2.gbd", &pGestureDatabase))) {
+	//	std::cerr << "Failed to load gesture database" << std::endl;
+	//	pBodyFrameSource->Release();
+	//	pSensor->Release();
+	//	exit(1);
+	//}
 
-		while (true) {
-			IBodyFrame* pBodyFrame = nullptr;
+	//gestureCount = 0;
+	//if (FAILED(pGestureDatabase->get_AvailableGesturesCount(&gestureCount))) {
+	//	std::cerr << "Failed to get gesture count" << std::endl;
+	//	pGestureDatabase->Release();
+	//	pBodyFrameSource->Release();
+	//	pSensor->Release();
+	//	exit(1);
+	//}
 
-			// Get the latest body frame
-			if (SUCCEEDED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {
-				IBody* ppBodies[BODY_COUNT] = { nullptr };
+	//IGesture **gestures = new IGesture * [gestureCount];
+	//pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
 
-				// Get the body data
-				if (SUCCEEDED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {
-					bPersonDetected = false;
+	//// Create gesture frame source
+	//if (FAILED(CreateVisualGestureBuilderFrameSource(pSensor, 1, &pGestureFrameSource))) {
+	//	std::cerr << "Failed to create gesture frame source" << std::endl;
+	//	delete[] gestures;
+	//	pGestureDatabase->Release();
+	//	pBodyFrameSource->Release();
+	//	pSensor->Release();
+	//	exit(1);
+	//}
 
-					// Check each body
-					for (int i = 0; i < BODY_COUNT; ++i) {
-						if (ppBodies[i]) {
-							BOOLEAN bTracked = false;
-							if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
-								ppBodies[i]->get_HandRightState(&rightHandState);
-								ppBodies[i]->get_HandRightConfidence(&rightHandConfidence);
-								ppBodies[i]->get_HandLeftState(&leftHandState);
-								ppBodies[i]->get_HandLeftConfidence(&leftHandConfidence);
+	//// Add gestures to track
+	//if (FAILED(pGestureFrameSource->AddGestures(gestureCount, gestures))) {
+	//	std::cerr << "Failed to add gestures" << std::endl;
+	//	delete[] gestures;
+	//	pGestureFrameSource->Release();
+	//	pGestureDatabase->Release();
+	//	pBodyFrameSource->Release();
+	//	pSensor->Release();
+	//	exit(1);
+	//}
 
-								if (rightHandState != previousRightHandState || leftHandState != previousLeftHandState) {
-									std::cout << "Right hand state: " << rightHandState << " (confidence: " << rightHandConfidence << ")" << std::endl;
-									std::cout << "Left hand state: " << leftHandState << " (confidence: " << leftHandConfidence << ")" << std::endl;
-								}
+	//// Create gesture frame reader
+	//if (FAILED(pGestureFrameSource->OpenReader(&pGestureFrameReader))) {
+	//	std::cerr << "Failed to open gesture frame reader" << std::endl;
+	//	delete[] gestures;
+	//	pGestureFrameSource->Release();
+	//	pGestureDatabase->Release();
+	//	pBodyFrameSource->Release();
+	//	pSensor->Release();
+	//	exit(1);
+	//}
 
-								previousRightHandState = rightHandState;
-								previousLeftHandState = leftHandState;
-								bPersonDetected = true;
+	//// Store database and clean up gestures array (but not individual gestures - they're referenced by the source)
+	//this->pGestureDatabase = pGestureDatabase;
+	//this->pGestures = gestures;
+	//this->gestureCount = gestureCount;
+}
+
+void Sensor::listen(void(*GestureCallback)(struct Data)) {
+	std::cout << "Listening for persons..." << std::endl;
+
+	// Detection loop
+	bool bPersonDetected = false;
+	int frameCount = 0;
+
+	// Track which bodies we've already reported to avoid duplicate callbacks
+	std::map<UINT64, IBody*> currentTrackedBodies;
+
+	IBody* ppBodies[BODY_COUNT] = { nullptr };
+
+	while (true) {
+		IBodyFrame* pBodyFrame = nullptr;
+
+		// Get the latest body frame
+		if (SUCCEEDED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {
+
+			// Get the body data
+			if (SUCCEEDED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {
+				bPersonDetected = false;
+
+
+				// TODO 1: Populate currentTrackedBodies with tracked IDs:Bodies of players
+				for (int i = 0; i < BODY_COUNT; ++i) {
+					if (ppBodies[i]) {
+						BOOLEAN bTracked = false;
+
+						if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
+							UINT64 trackingId = 0;
+							if (SUCCEEDED(ppBodies[i]->get_TrackingId(&trackingId)) && trackingId) {
+								currentTrackedBodies[trackingId] = ppBodies[i];
 							}
-							ppBodies[i]->Release();
 						}
-					}
 
-					// Print status every 30 frames
-					if (frameCount % 30 == 0) {
-						std::cout << "Frame " << frameCount << ": " << (bPersonDetected ? "PERSON PRESENT" : "No person") << std::endl;
 					}
 				}
 
-				pBodyFrame->Release();
+				// TODO 2: Iterate over currentTrackedBodies, calculate gesture, determine position with body data
+				IBody *most_left = ppBodies[0];
+				IBody *most_right = ppBodies[0];
+				for (auto const& [BodyId, Body] : currentTrackedBodies) {
+					Joint* joints;
+					Joint joints[JointType_Count];
+					if (SUCCEEDED(Body->GetJoints(JointType_Count, joints))) {
+						float x = joints[JointType_Head].Position.X;
+
+						Joint leftJoints[JointType_Count];
+						most_left->GetJoints(JointType_Count, leftJoints);
+
+						Joint rightJoints[JointType_Count];
+						most_right->GetJoints(JointType_Count, rightJoints);
+
+						if (x < leftJoints[JointType_Head].Position.X) {
+							most_left = Body;
+						}
+						if (x > rightJoints[JointType_Head].Position.X) {
+							most_right = Body;
+						}
+					}
+				}
+
+				// Update tracked bodies for next frame
+				// Print status every 30 frames
+				if (frameCount % 30 == 0) {
+					std::cout << "Frame " << frameCount << ": " << ((currentTrackedBodies.size() > 0) ? "PERSON PRESENT" : "No person")
+						<< " (Tracking " << currentTrackedBodies.size() << " bodies)" << std::endl;
+				}
 			}
 
-			frameCount++;
-			Sleep(33);  // ~30 FPS
+			pBodyFrame->Release();
 		}
 
-		// Cleanup
-		if (pBodyFrameReader) {
-			pBodyFrameReader->Release();
-		}
-		if (pBodyFrameSource) {
-			pBodyFrameSource->Release();
-		}
-		if (pSensor) {
-			pSensor->Close();
-			pSensor->Release();
-		}
-
-		std::cout << "Kinect sensor closed" << std::endl;
-		return 0;
+		frameCount++;
+		Sleep(33);  // ~30 FPS
 	}
-	private:
-		IBodyFrameReader* pBodyFrameReader;
-		IBodyFrameSource* pBodyFrameSource;
-		IKinectSensor* pSensor;
-};
+}
+
+Sensor::~Sensor() {
+	// Cleanup
+	if (pGestureFrameReader) {
+		pGestureFrameReader->Release();
+	}
+	if (pGestureFrameSource) {
+		pGestureFrameSource->Release();
+	}
+	if (pGestureDatabase) {
+		pGestureDatabase->Release();
+	}
+	if (pBodyFrameReader) {
+		pBodyFrameReader->Release();
+	}
+	if (pBodyFrameSource) {
+		pBodyFrameSource->Release();
+	}
+	if (pSensor) {
+		pSensor->Close();
+		pSensor->Release();
+	}
+
+	if (pGestures) {
+		for (UINT i = 0; i < gestureCount; i++) {
+			if (pGestures[i]) pGestures[i]->Release();
+		}
+		delete[] pGestures;
+	}
+
+
+	std::cout << "Kinect sensor closed" << std::endl;
+}

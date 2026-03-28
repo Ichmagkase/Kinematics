@@ -5,8 +5,11 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+#define HOST_IP "192.168.145.143"
+#define HOST_PORT 4242
+
 // Static member initializations
-const char* IPC::actions[] = { "move_jump", "attack_1", "move_right", "move_left", "block" };
+const std::string IPC::actions[] = { "move_jump", "attack_1", "move_right", "move_left", "block" };
 SOCKET IPC::ipc_socket = INVALID_SOCKET;
 sockaddr_in IPC::endpoint = {};
 
@@ -28,13 +31,15 @@ IPC::IPC() {
 	}
 
 	endpoint.sin_family = AF_INET;
-	endpoint.sin_port = htons(12345);
-	inet_pton(AF_INET, "127.0.0.1", &endpoint.sin_addr);
+	endpoint.sin_port = htons(HOST_PORT);
+	inet_pton(AF_INET, HOST_IP, &endpoint.sin_addr);
 }
 
 // Method implementation
-int IPC::sendEventPayload(enum Event e) {
-	int sendResult = sendto(ipc_socket, actions[e], strlen(actions[e]), 0, (sockaddr*)&endpoint, sizeof(endpoint));
+int IPC::sendEventPayload(struct Data e) {
+	std::string packet = e.player + "|" + actions[e.event] + "\n";
+	std::cout << "Sending packet: " << packet << std::endl;
+	int sendResult = sendto(ipc_socket, packet.c_str(), packet.size(), 0, (sockaddr*)&endpoint, sizeof(endpoint));
 	if (sendResult == SOCKET_ERROR) {
 		std::cout << "sendto failed with error: " << WSAGetLastError() << std::endl;
 	}

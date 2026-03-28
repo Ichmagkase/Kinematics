@@ -7,3 +7,8 @@ enum Event {
 	MOVE_L,
 	BLOCK
 };
+
+struct Data {
+	Event event;
+	std::string player;
+};
