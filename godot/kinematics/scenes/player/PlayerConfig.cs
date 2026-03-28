@@ -7,7 +7,7 @@ namespace Game.Player
 {
 	public partial class PlayerConfig : Node
 	{
-		private string _configPath = "res://scenes/player/PlayerConfig.ini";
+		private string _configPath = "res://config/player/PlayerConfig.ini";
 		private ConfigFile _configFile = new ConfigFile();
 
 		// [default]
