@@ -5,22 +5,49 @@
 #include <Kinect.h>
 #include <Kinect.VisualGestureBuilder.h>
 #include "sensor.h"
+#include <windows.h>
 
 #pragma comment(lib, "Kinect20.lib")
 #pragma comment(lib, "Kinect20.VisualGestureBuilder.lib")
 
 #define MAX_PLAYERS 2
 
+std::string GetHRESULTErrorMessage(HRESULT hr)
+{
+	char* errorMsg = nullptr;
+	FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		hr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPSTR)&errorMsg,
+		0,
+		nullptr
+	);
+
+	std::string message = errorMsg ? errorMsg : "Unknown error";
+	LocalFree(errorMsg);
+	return message;
+}
+
+void CheckError(HRESULT hr, std::string message) {
+	if (FAILED(hr)) {
+		std::cerr << message << ": " << GetHRESULTErrorMessage(hr) << std::endl;
+		exit(1);
+	}
+}
+
 Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor(nullptr), 
 	pGestureFrameSource(nullptr), pGestureFrameReader(nullptr), pGestureDatabase(nullptr),
 	pGestures(nullptr), gestureCount(0) {
 	std::cout << "Kinect Person Detection Program" << std::endl;
 
+	HRESULT hr;
+
 	// Get the default Kinect sensor
-	if (FAILED(GetDefaultKinectSensor(&pSensor))) {
-		std::cerr << "Failed to get default Kinect sensor" << std::endl;
-		exit(1);
-	}
+	hr = GetDefaultKinectSensor(&pSensor);
+	CheckError(hr, "GetDefaultKinectSensor");
+
 
 	if (!pSensor) {
 		std::cerr << "No Kinect sensor found" << std::endl;
@@ -28,164 +55,302 @@ Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor
 	}
 
 	// Open the sensor
-	if (FAILED(pSensor->Open())) {
-		std::cerr << "Failed to open Kinect sensor" << std::endl;
-		pSensor->Release();
-		exit(1);
-	}
+	hr = pSensor->Open();
+	CheckError(hr, "IKinectSensor::Open()");
 
 	// Get the body frame source
-	if (FAILED(pSensor->get_BodyFrameSource(&pBodyFrameSource))) {
-		std::cerr << "Failed to get body frame source" << std::endl;
-		pSensor->Release();
-		exit(1);
-	}
+	hr = pSensor->get_BodyFrameSource(&pBodyFrameSource);
+	CheckError(hr, "IKinectSensor::get_BodyFrameSource");
 
 	// Create body frame reader
-	if (FAILED(pBodyFrameSource->OpenReader(&pBodyFrameReader))) {
-		std::cerr << "Failed to open body frame reader" << std::endl;
-		pBodyFrameSource->Release();
-		pSensor->Release();
-		exit(1);
-	}
+	hr = pBodyFrameSource->OpenReader(&pBodyFrameReader);
+	CheckError(hr, "IBodyFrameSource::OpenReader");
 
 	std::cout << "Kinect sensor initialized successfully" << std::endl;
 
-	// Load gesture database
-	//IVisualGestureBuilderDatabase* pGestureDatabase = nullptr;
+	// load gesture database
+	IVisualGestureBuilderDatabase* pGestureDatabase = nullptr;
+	hr = CreateVisualGestureBuilderDatabaseInstanceFromFile(L"C:\\Users\\micro\\source\\repos\\Ichmagkase\\Kinematics\\kinectbridge\\x64\\Debug\\gestures.gbd", &pGestureDatabase);
+	CheckError(hr, "CreateVisualGestureBuilderDatabaseInstanceFromFile");
 
-	//if (FAILED(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"HandRaised2.gbd", &pGestureDatabase))) {
-	//	std::cerr << "Failed to load gesture database" << std::endl;
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
+	gestureCount = 0;
+	hr = pGestureDatabase->get_AvailableGesturesCount(&gestureCount);
+	CheckError(hr, "IVisualGestureBuilderDatabase::get_AvailableGesturesCount");
+	
+	IGesture **gestures = new IGesture* [gestureCount];
+	hr = pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
+	CheckError(hr, "IVisualGestureBuilderDatabase::get_AvailableGestures");
 
-	//gestureCount = 0;
-	//if (FAILED(pGestureDatabase->get_AvailableGesturesCount(&gestureCount))) {
-	//	std::cerr << "Failed to get gesture count" << std::endl;
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//IGesture **gestures = new IGesture * [gestureCount];
-	//pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
-
-	//// Create gesture frame source
-	//if (FAILED(CreateVisualGestureBuilderFrameSource(pSensor, 1, &pGestureFrameSource))) {
-	//	std::cerr << "Failed to create gesture frame source" << std::endl;
-	//	delete[] gestures;
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Add gestures to track
-	//if (FAILED(pGestureFrameSource->AddGestures(gestureCount, gestures))) {
-	//	std::cerr << "Failed to add gestures" << std::endl;
-	//	delete[] gestures;
-	//	pGestureFrameSource->Release();
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Create gesture frame reader
-	//if (FAILED(pGestureFrameSource->OpenReader(&pGestureFrameReader))) {
-	//	std::cerr << "Failed to open gesture frame reader" << std::endl;
-	//	delete[] gestures;
-	//	pGestureFrameSource->Release();
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Store database and clean up gestures array (but not individual gestures - they're referenced by the source)
-	//this->pGestureDatabase = pGestureDatabase;
-	//this->pGestures = gestures;
-	//this->gestureCount = gestureCount;
+	// Store database and clean up gestures array (but not individual gestures - they're referenced by the source)
+	this->pGestureDatabase = pGestureDatabase;
+	this->pGestures = gestures;
+	this->gestureCount = gestureCount;
 }
 
-void Sensor::listen(void(*GestureCallback)(struct Data)) {
+/**
+ * Wait for 2 tracked players and return them
+ * Also handle relative position of players here
+ */
+std::array<UINT64, 2> Sensor::awaitPlayersReady() {
+	std::cout << "Waiting for 2 players..." << std::endl;
+
+	HRESULT hr;
+	IBody* ppBodies[BODY_COUNT] = { nullptr };
+	int detectedCount = 0;
+	std::array<UINT64, 2> players = {};
+	IBody* playerBodies[2] = { nullptr };
+
+	while (detectedCount < 2) {
+		IBodyFrame* pBodyFrame = nullptr;
+		hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+		CheckError(hr, "IBodyFrameReader::AcquireLatestFrame");
+
+		if (!pBodyFrame) {
+			std::cerr << "pBodyFrame is null" << std::endl;
+			exit(1);
+		}
+
+		hr = pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies);
+		CheckError(hr, "IBodyFrame::GetAndRefreshBodyData");
+		
+		detectedCount = 0;
+		playerBodies[0] = nullptr;
+		playerBodies[1] = nullptr;
+		players[0] = 0;
+		players[1] = 0;
+
+		for (int i = 0; i < BODY_COUNT; ++i) {
+			if (detectedCount >= 2) break;
+
+			BOOLEAN bTracked = false;
+			if (ppBodies[i]) {
+				hr = ppBodies[i]->get_IsTracked(&bTracked);
+				CheckError(hr, "IBody::getIsTracked");
+			}
+			
+			if (bTracked) {
+				UINT64 trackingId;
+				hr = ppBodies[i]->get_TrackingId(&trackingId);
+				CheckError(hr, "IBody::get_TrackingId");
+				playerBodies[detectedCount] = ppBodies[i];
+				players[detectedCount] = trackingId;
+				detectedCount++;
+			}
+		}
+		pBodyFrame->Release();
+	}
+
+	// now sort the 2 players by position from left to right
+	Joint player1_joints[JointType_Count];
+	if (FAILED(playerBodies[0]->GetJoints(JointType_Count, player1_joints))) {}
+	float player1_head_x = player1_joints[JointType_Head].Position.X;
+
+	Joint player2_joints[JointType_Count];
+	if (FAILED(playerBodies[1]->GetJoints(JointType_Count, player2_joints))) {}
+	float player2_head_x = player2_joints[JointType_Head].Position.X;
+
+	// Sort left most player (rightmost from camera perspective) to be first
+	if (player1_head_x < player2_head_x) {
+		UINT64 tmp = players[0];
+		players[0] = players[1];
+		players[1] = tmp;
+	}
+
+	return players;
+}
+
+/**
+ * Refresh players array in place
+ */
+std::array<IBody*, 2> Sensor::refreshAndGetPlayers(std::array<UINT64, 2> & players) {
+	IBody* ppBodies[BODY_COUNT] = {};
+	HRESULT hr;
+	IBodyFrame* pBodyFrame = nullptr;
+	hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+	CheckError(hr, "IBodyFrameReader::AcquireLatestFrame");
+	hr = pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies);
+	CheckError(hr, "IBodyFrame::GetAndRefreshBodyData");
+
+	std::array<IBody*, 2> playerBodies = { };
+
+	BOOLEAN player1_IsTracked = false;
+	BOOLEAN player2_IsTracked = false;
+	int extraCount = 0;
+	UINT64 extraBodyTrackingIds[] = { 0, 0 };
+	// For every body this frame
+	for (int i = 0; i < BODY_COUNT; ++i) {
+		UINT64 thisTrackingId;
+		// if body is not null
+		if (ppBodies[i]) {
+			BOOLEAN bTracked;
+			hr = ppBodies[i]->get_IsTracked(&bTracked);
+			CheckError(hr, "IBody::get_IsTracked");
+			// ... and body is tracked
+			if (bTracked) {
+				// Get its trackingID
+				hr = ppBodies[i]->get_TrackingId(&thisTrackingId);
+				CheckError(hr, "IBody::get_TrackingId");
+				// Check if its an existing tracked player
+				if (thisTrackingId == players[0]) {
+					playerBodies[0] = ppBodies[i];
+					player1_IsTracked = true;
+				}
+				else if (thisTrackingId == players[1]) {
+					playerBodies[1] = ppBodies[i];
+					player2_IsTracked = true;
+				}
+				else {
+					extraBodyTrackingIds[extraCount++] = thisTrackingId;
+				}
+			}
+		}
+	}
+
+	// if neither players are present, get 2 new players
+	if (!player1_IsTracked && !player2_IsTracked) {
+		players = awaitPlayersReady();
+	}
+	else {
+		// Fill in missing player gaps
+		if (!player1_IsTracked) {
+			if (extraCount == 0) {
+				players[0] = 0;
+			}
+			players[0] = extraBodyTrackingIds[--extraCount];
+		}
+		if (!player2_IsTracked) {
+			if (extraCount == 0) {
+				players[1] = 0;
+			}
+			players[1] = extraBodyTrackingIds[extraCount];
+		}
+	}
+
+	pBodyFrame->Release();
+
+	return playerBodies;
+}
+
+/**
+ * Ensure players do not go out of bounds and detect gestures
+ */
+void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> players) {
 	std::cout << "Listening for persons..." << std::endl;
 
 	// Detection loop
-	bool bPersonDetected = false;
 	int frameCount = 0;
-
+	HRESULT hr;
 	// Track which bodies we've already reported to avoid duplicate callbacks
-	std::map<UINT64, IBody*> currentTrackedBodies;
-
+	// std::map<UINT64, IBody*> currentTrackedBodies;
 	IBody* ppBodies[BODY_COUNT] = { nullptr };
 
 	while (true) {
+		refreshAndGetPlayers(players);
+
 		IBodyFrame* pBodyFrame = nullptr;
 
 		// Get the latest body frame
-		if (SUCCEEDED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {
+		hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+		CheckError(hr, "IBodyFrameReader::AcquireLatestFrame");
 
-			// Get the body data
-			if (SUCCEEDED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {
-				bPersonDetected = false;
+		if (!pBodyFrame) {
+			std::cerr << "pBodyFrame is null" << std::endl;
+			exit(1);
+		}
 
+		// Get the body data
+		hr = pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies);
+		CheckError(hr, "IBodyFrame::GetAndRefreshBodyData");
 
-				// TODO 1: Populate currentTrackedBodies with tracked IDs:Bodies of players
-				for (int i = 0; i < BODY_COUNT; ++i) {
-					if (ppBodies[i]) {
-						BOOLEAN bTracked = false;
+		// Populate currentTrackedBodies with tracked IDs:Bodies of players
+		//for (int i = 0; i < BODY_COUNT; ++i) {
+		//	if (ppBodies[i]) {
+		//		BOOLEAN bTracked = false;
+		//		if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
+		//			UINT64 trackingId = 0;
+		//			if (SUCCEEDED(ppBodies[i]->get_TrackingId(&trackingId)) && trackingId) {
+		//				currentTrackedBodies[trackingId] = ppBodies[i];
+		//			}
+		//		}
 
-						if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
-							UINT64 trackingId = 0;
-							if (SUCCEEDED(ppBodies[i]->get_TrackingId(&trackingId)) && trackingId) {
-								currentTrackedBodies[trackingId] = ppBodies[i];
-							}
-						}
+		//	}
+		//}
 
-					}
+		// TODO 2: Iterate over currentTrackedBodies, calculate gesture, determine position with body data
+		// TODO: You can now use this known tracking data to find the gestures of each 
+		// TODO: Pull assignments out of conditions to pull HRESULT and print better error messages
+
+		// for (auto const& [BodyId, Body] : currentTrackedBodies) {
+		for (int i = 0; i < 2; i++) {
+			hr = CreateVisualGestureBuilderFrameSource(pSensor, players[i], &pGestureFrameSource);
+			CheckError(hr, "CreateVisualGestureBuilderFrameSource");
+
+			pGestureFrameSource->AddGestures(gestureCount, pGestures);
+			CheckError(hr, "IVisualGestureBuilderFrameSource::AddGestures");
+
+			hr = pGestureFrameSource->OpenReader(&pGestureFrameReader);
+			CheckError(hr, "IVisualGestureBuilderFrameSource::OpenReader");
+
+			IVisualGestureBuilderFrame* pGestureFrame = nullptr;
+			hr = pGestureFrameReader->CalculateAndAcquireLatestFrame(&pGestureFrame);
+			CheckError(hr, "IVisualGestureBuilderFrameReader::CalculateAndAcquireLatestFrame");
+
+			if (!pGestureFrame) {
+				std::cerr << "pGestureFrame is null" << std::endl;
+				exit(1);
+			}
+
+			BOOLEAN gesturing = false;
+
+			for (int i = 0; i < gestureCount; ++i) {
+				if (gesturing) {
+					break;
 				}
 
-				// TODO 2: Iterate over currentTrackedBodies, calculate gesture, determine position with body data
-				IBody *most_left = ppBodies[0];
-				IBody *most_right = ppBodies[0];
-				for (auto const& [BodyId, Body] : currentTrackedBodies) {
-					Joint* joints;
-					Joint joints[JointType_Count];
-					if (SUCCEEDED(Body->GetJoints(JointType_Count, joints))) {
-						float x = joints[JointType_Head].Position.X;
+				IDiscreteGestureResult* pGestureResult = nullptr;
+				hr = pGestureFrame->get_DiscreteGestureResult(pGestures[i], &pGestureResult);
+				CheckError(hr, "IVisualGestureBuilderFrame::get_DiscreteGestureResult");
 
-						Joint leftJoints[JointType_Count];
-						most_left->GetJoints(JointType_Count, leftJoints);
+				if (pGestureResult) {
+					BOOLEAN isDetected = false;
+					float confidence = 0.0f;
 
-						Joint rightJoints[JointType_Count];
-						most_right->GetJoints(JointType_Count, rightJoints);
+					pGestureResult->get_Detected(&isDetected);
+					pGestureResult->get_Confidence(&confidence);
 
-						if (x < leftJoints[JointType_Head].Position.X) {
-							most_left = Body;
-						}
-						if (x > rightJoints[JointType_Head].Position.X) {
-							most_right = Body;
-						}
+					if (isDetected && confidence > 0.5f) {
+						UINT capacity = 256;
+						wchar_t gestureName[256];
+						pGestures[i]->get_Name(capacity, gestureName);
+
+						std::wprintf(L"Detected gesture: %s (confidence: %.2f) from player %llu\n", gestureName, confidence, players[i]);
+						gesturing = true;
 					}
+
+					pGestureResult->Release();
 				}
 
-				// Update tracked bodies for next frame
-				// Print status every 30 frames
-				if (frameCount % 30 == 0) {
-					std::cout << "Frame " << frameCount << ": " << ((currentTrackedBodies.size() > 0) ? "PERSON PRESENT" : "No person")
-						<< " (Tracking " << currentTrackedBodies.size() << " bodies)" << std::endl;
+				if (!gesturing) {
+					// TODO: player is idle
 				}
 			}
 
-			pBodyFrame->Release();
+			pGestureFrame->Release();
+		}
+			
+		// }
+
+		// Update tracked bodies for next frame
+		// Print status every 30 frames
+		if (frameCount % 30 == 0) {
+			std::cout << "Frame " << frameCount << ": " << ((currentTrackedBodies.size() > 0) ? "PERSON PRESENT" : "No person")
+				<< " (Tracking " << currentTrackedBodies.size() << " bodies)" << std::endl;
 		}
 
+		pBodyFrame->Release();
+
 		frameCount++;
-		Sleep(33);  // ~30 FPS
+		Sleep(33);  // ~30 FPS FOR DEBUG PURPOSES ONLY
 	}
 }
 
