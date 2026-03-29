@@ -5,11 +5,30 @@
 #include <Kinect.h>
 #include <Kinect.VisualGestureBuilder.h>
 #include "sensor.h"
+#include <windows.h>
 
 #pragma comment(lib, "Kinect20.lib")
 #pragma comment(lib, "Kinect20.VisualGestureBuilder.lib")
 
 #define MAX_PLAYERS 2
+
+std::string GetHRESULTErrorMessage(HRESULT hr)
+{
+	char* errorMsg = nullptr;
+	FormatMessageA(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr,
+		hr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPSTR)&errorMsg,
+		0,
+		nullptr
+	);
+
+	std::string message = errorMsg ? errorMsg : "Unknown error";
+	LocalFree(errorMsg);
+	return message;
+}
 
 Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor(nullptr), 
 	pGestureFrameSource(nullptr), pGestureFrameReader(nullptr), pGestureDatabase(nullptr),
@@ -51,15 +70,13 @@ Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor
 
 	std::cout << "Kinect sensor initialized successfully" << std::endl;
 
-	// Load gesture database
-	//IVisualGestureBuilderDatabase* pGestureDatabase = nullptr;
+	// load gesture database
+	IVisualGestureBuilderDatabase* pGestureDatabase = nullptr;
 
-	//if (FAILED(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"HandRaised2.gbd", &pGestureDatabase))) {
-	//	std::cerr << "Failed to load gesture database" << std::endl;
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
+	if (FAILED(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"C:\\Users\\micro\\source\\repos\\Ichmagkase\\Kinematics\\kinectbridge\\x64\\Debug\\gestures.gbd", &pGestureDatabase))) {
+		std::cerr << GetHRESULTErrorMessage(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"gestures.gbd", &pGestureDatabase));
+		exit(1);
+	}
 
 	//gestureCount = 0;
 	//if (FAILED(pGestureDatabase->get_AvailableGesturesCount(&gestureCount))) {
@@ -69,7 +86,7 @@ Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor
 	//	pSensor->Release();
 	//	exit(1);
 	//}
-
+	 
 	//IGesture **gestures = new IGesture * [gestureCount];
 	//pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
 
@@ -153,7 +170,6 @@ void Sensor::listen(void(*GestureCallback)(struct Data)) {
 				IBody *most_left = ppBodies[0];
 				IBody *most_right = ppBodies[0];
 				for (auto const& [BodyId, Body] : currentTrackedBodies) {
-					Joint* joints;
 					Joint joints[JointType_Count];
 					if (SUCCEEDED(Body->GetJoints(JointType_Count, joints))) {
 						float x = joints[JointType_Head].Position.X;
@@ -171,6 +187,18 @@ void Sensor::listen(void(*GestureCallback)(struct Data)) {
 							most_right = Body;
 						}
 					}
+				}
+				
+				BOOLEAN left_is_tracked;
+				most_left->get_IsTracked(&left_is_tracked);
+				BOOLEAN right_is_tracked;
+				most_right->get_IsTracked(&right_is_tracked);
+				if (left_is_tracked && right_is_tracked) {
+					UINT64 tracking_id;
+					most_left->get_TrackingId(&tracking_id);
+					std::cout << "Player most left: " << tracking_id << std::endl;
+					most_right->get_TrackingId(&tracking_id);
+					std::cout << "Player most right: " << tracking_id << std::endl;
 				}
 
 				// Update tracked bodies for next frame

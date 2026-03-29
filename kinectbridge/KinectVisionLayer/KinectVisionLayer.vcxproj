@@ -111,8 +111,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Kinect20.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\Lib\x64\Kinect20.lib;C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409\Lib\x64\Kinect20.VisualGestureBuilder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(KINECTSDK20_DIR)Redist\VGB\x64\Kinect20.VisualGestureBuilder.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -142,7 +145,7 @@
     <ClInclude Include="test.h" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\HandRaised2.gbd">
+    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\gestures.gbd">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <FileType>Document</FileType>
     </CopyFileToFolders>

@@ -43,7 +43,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\HandRaised2.gbd">
+    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\gestures.gbd">
       <Filter>Resource Files</Filter>
     </CopyFileToFolders>
   </ItemGroup>
