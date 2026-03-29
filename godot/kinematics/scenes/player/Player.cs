@@ -4,12 +4,17 @@ namespace Game.Player
 {
 	public partial class Player : CharacterBody2D
 	{
+		public int PlayerId;
 		private PlayerSprite _playerSprite;
 		private PlayerConfig _playerConfig;
 		private bool _hasDoubleJumpped = false;
 
 		public override void _Ready()
 		{
+			if (PlayerId <= 0)
+			{
+				GD.PrintErr($"PlayerId not set (Id {PlayerId}, expected > 0). This should be done by the GameStart.cs script");
+			}
 			_playerConfig = GetNode<PlayerConfig>("PlayerConfig");
 			_playerSprite = GetNode<PlayerSprite>("AnimatedSprite2D");
 		}
@@ -79,6 +84,7 @@ namespace Game.Player
 
 		private Vector2 HandleBlock(Vector2 velocity)
 		{
+			if (!IsOnFloor() || velocity != Vector2.Zero) return velocity;
 			if (Input.IsActionJustPressed(PlayerInputActions.Block))
 			{
 				_playerSprite.Block();

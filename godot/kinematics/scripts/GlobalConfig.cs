@@ -15,6 +15,8 @@ namespace Game
 		public string FontPath;
 		public string GameAudioThemesPath;
 		public string GameAudioPath;
+		public string PlayerPath;
+		public int PlayerCount;
 		public List<string> ToolTips;
 
 		// Config section
@@ -29,6 +31,8 @@ namespace Game
 		private const string KeyAudioThemes        = "audio_themes";
 		private const string KeyCurrentThemePath   = "current_theme_path";
 		private const string KeyTooltips           = "tooltips";
+		private const string KeyPlayerCount		   = "player_count";
+		private const string KeyPlayerPath		   = "player_scene";
 
 		// Default values
 		private const string DefaultGameScene        = "res://scenes/game-menu-layer.tscn";
@@ -38,6 +42,8 @@ namespace Game
 		private const string DefaultFont             = "res://fonts/Jersey10-Regular.ttf";
 		private const string DefaultAudioThemesPath  = "res://music/themes";
 		private const string DefaultAudioPath        = "res://music/themes/battle-theme-main.wav";
+		private const string DefaultPlayerPath	 	 = "res://scenes/player/player.tscn";
+		private const int DefaultPlayerCount 	 	 = 2;
 
 		private ConfigFile _globalConfigFile;
 
@@ -67,6 +73,8 @@ namespace Game
 			FontPath            = (string)_globalConfigFile.GetValue(SectionDefault, KeyFont,             DefaultFont);
 			GameAudioThemesPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyAudioThemes,      DefaultAudioThemesPath);
 			GameAudioPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyCurrentThemePath, DefaultAudioPath);
+			PlayerPath          = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerPath,       DefaultPlayerPath);
+			PlayerCount		    = (int)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerCount, 	  DefaultPlayerCount);
 
 			ToolTips = new List<string>();
 			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());
@@ -85,6 +93,9 @@ namespace Game
 			FontPath            = DefaultFont;
 			GameAudioThemesPath = DefaultAudioThemesPath;
 			GameAudioPath       = DefaultAudioPath;
+			PlayerCount			= DefaultPlayerCount;
+			PlayerPath		    = DefaultPlayerPath;
+
 			ToolTips = new List<string>
 			{
 				"A Xbox Kinect? What are you gonna do with that?!?",

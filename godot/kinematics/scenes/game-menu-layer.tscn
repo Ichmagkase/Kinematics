@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://cb63jpjtcftpo"]
 
 [ext_resource type="PackedScene" uid="uid://b5703equhpmi3" path="res://scenes/game.tscn" id="1_v8al8"]
+[ext_resource type="Script" uid="uid://bpvudng2u5x64" path="res://scenes/GameStart.cs" id="2_jp2fn"]
 [ext_resource type="Script" uid="uid://ttcoi80q54lc" path="res://scenes/GameMenuLayer.cs" id="2_jqrh1"]
 
 [node name="GameMenuLayer" type="Node2D" unique_id=2142135067]
 
 [node name="Game" parent="." unique_id=964767718 instance=ExtResource("1_v8al8")]
-script = null
+script = ExtResource("2_jp2fn")
 
 [node name="MenuLayer" type="Node" parent="." unique_id=564222738]
 script = ExtResource("2_jqrh1")

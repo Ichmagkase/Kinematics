@@ -330,7 +330,7 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="main-map" type="TileMap" unique_id=1408385878]
+[node name="MainMap" type="TileMap" unique_id=1408385878]
 tile_set = SubResource("TileSet_ma2fm")
 format = 2
 
