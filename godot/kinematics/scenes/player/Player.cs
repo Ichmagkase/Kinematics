@@ -8,6 +8,14 @@ namespace Game.Player
 		private PlayerSprite _playerSprite;
 		private PlayerConfig _playerConfig;
 		private bool _hasDoubleJumpped = false;
+		private static bool CALLED_FROM_SIGNAL = true;
+
+		public void HandleActionSignal(string e)
+		{
+			switch (e)
+			{
+			}
+		}
 
 		public override void _Ready()
 		{
@@ -43,7 +51,7 @@ namespace Game.Player
 			return velocity;
 		}
 
-		private Vector2 HandleJump(Vector2 velocity)
+		private Vector2 HandleJump(Vector2 velocity, bool fromSignal = false)
 		{
 			bool canJump = IsOnFloor() && Input.IsActionPressed(PlayerInputActions.Jump);
 			bool canDoubleJump = !IsOnFloor()
@@ -66,7 +74,7 @@ namespace Game.Player
 			return velocity;
 		}
 
-		private Vector2 HandleAttack(Vector2 velocity)
+		private Vector2 HandleAttack(Vector2 velocity, bool fromSignal = false)
 		{
 			if (!IsOnFloor()) return velocity;
 			if (Input.IsActionJustPressed(PlayerInputActions.Attack1))
@@ -82,7 +90,7 @@ namespace Game.Player
 			return velocity;
 		}
 
-		private Vector2 HandleBlock(Vector2 velocity)
+		private Vector2 HandleBlock(Vector2 velocity, bool fromSignal = false)
 		{
 			if (!IsOnFloor() || velocity != Vector2.Zero) return velocity;
 			if (Input.IsActionJustPressed(PlayerInputActions.Block))
@@ -103,7 +111,7 @@ namespace Game.Player
 			return velocity;
 		}
 
-		private Vector2 HandleMovement(Vector2 velocity)
+		private Vector2 HandleMovement(Vector2 velocity, bool fromSignal = false)
 		{
 			Vector2 direction = Input.GetVector(
 				PlayerInputActions.MoveLeft,

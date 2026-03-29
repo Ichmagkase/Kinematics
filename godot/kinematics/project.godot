@@ -81,6 +81,12 @@ pause={
 ]
 }
 
+[layer_names]
+
+2d_render/layer_1="map"
+2d_physics/layer_1="maps"
+2d_physics/layer_2="player"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

@@ -417,6 +417,7 @@ animations = [{
 size = Vector2(80, 156)
 
 [node name="Player" type="CharacterBody2D" unique_id=165373145]
+collision_layer = 2
 script = ExtResource("1_5gtgg")
 metadata/_edit_group_ = true
 

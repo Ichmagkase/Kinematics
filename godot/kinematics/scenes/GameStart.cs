@@ -1,4 +1,6 @@
 using Godot;
+using System.Collections.Generic;
+using Game.Player;
 
 namespace Game
 {
@@ -7,6 +9,7 @@ namespace Game
 	{
 
 		private Camera2D _currCamera;
+		private List<Player.Player> _playerNodes;
 
 		private void _CreatePlayers(int playerCount)
 		{
@@ -16,6 +19,7 @@ namespace Game
 			var rightStartingPos = new Vector2(currPlayerPos.X / 2, 50);
 			var flip = true;
 
+			_playerNodes = new List<Player.Player>();
 			for (int i = 1; i <= playerCount; i++)
 			{
 				var instance = currPlayer.Instantiate<Player.Player>();
@@ -30,6 +34,42 @@ namespace Game
 				{ 
 					instance.GlobalPosition = currPlayerPos + rightStartingPos;
 					flip = true; 
+				}
+				_playerNodes.Add(instance);
+			}
+		}
+
+		private void _SetupPlayerSignals()
+		{
+			foreach (Player.Player p in _playerNodes)
+			{
+				switch (p.PlayerId)
+				{
+					case 1:
+						 EventBus.Instance.PlayerOneAction += p.HandleActionSignal;
+						break;
+					case 2:
+						 EventBus.Instance.PlayerTwoAction += p.HandleActionSignal;
+						break;
+					default:
+						GD.PrintErr($"failed to assign singal to player with ID: {p.PlayerId}, no known signal for this id");
+						break;
+				}
+			}
+		}
+
+		private void _TeardownPlayerSignals()
+		{
+			foreach (Player.Player p in _playerNodes)
+			{
+				switch (p.PlayerId)
+				{
+					case 1:
+						EventBus.Instance.PlayerOneAction -= p.HandleActionSignal;
+						break;
+					case 2:
+						EventBus.Instance.PlayerTwoAction -= p.HandleActionSignal;
+						break;
 				}
 			}
 		}
@@ -47,6 +87,12 @@ namespace Game
 
 			int count = GlobalConfig.Instance.PlayerCount;
 			_CreatePlayers(count);
+			_SetupPlayerSignals();
+		}
+
+		public override void _ExitTree()
+		{
+			_TeardownPlayerSignals();
 		}
 	}
 }
