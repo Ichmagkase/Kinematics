@@ -15,11 +15,11 @@ int main() {
 	Sensor sensor;
 
 	// AWAIT PLAYERS READY ... Do this once to determine relative position
-	std::array<IBody*, 2> players;
+	std::array<UINT64, 2> players;
 	players = sensor.awaitPlayersReady();
 
 	while (true) {
 		Sleep(1000); // Simulate waiting for sensor data
-		sensor.listen(&GestureListener, players);		
+		sensor.listen(&GestureListener, players);
 	}
 }
