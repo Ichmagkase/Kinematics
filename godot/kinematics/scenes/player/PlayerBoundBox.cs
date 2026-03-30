@@ -15,13 +15,18 @@ namespace Game.Player
 		
 		public override void _Ready()
 		{
-			_playerConfig = GetParent().GetNode<PlayerConfig>("PlayerConfig");
+			_playerConfig = GetParent().GetParent().GetNode<PlayerConfig>("PlayerConfig");
 			_animationSizes = _playerConfig.AnimationNameToBoundingBoxSize;
 			_offsetSizes = _playerConfig.AnimationNameToBoundingBoxOffsetSize;
-			_animatedSprite = GetParent().GetNode<PlayerSprite>("AnimatedSprite2D");
+			_animatedSprite = GetParent().GetParent().GetNode<PlayerSprite>("AnimatedSprite2D");
 			_lastFlipH = _animatedSprite.FlipH;
-			_rect = (RectangleShape2D)Shape;
 
+			// Copy rectangle from spirte to avoid player overwrite
+			var newRect = new RectangleShape2D();
+			newRect.Size = ((RectangleShape2D)Shape).Size;
+			Shape = newRect;
+			_rect = newRect;
+			
 			if (_animatedSprite == null)
 				GD.PrintErr("PlayerBoundBox: Could not find AnimatedSprite2D on parent");
 
@@ -75,6 +80,12 @@ namespace Game.Player
 
 			_rect.Size = newSize;
 			Position = finalOffset;
+
+			// Keep Area2D shape in sync
+			var area = GetParent();
+			var areaShape = area.GetNode<CollisionShape2D>("CollisionShape2D");
+			((RectangleShape2D)areaShape.Shape).Size = newSize;
+			areaShape.Position = finalOffset;
 		}
 	}
 }

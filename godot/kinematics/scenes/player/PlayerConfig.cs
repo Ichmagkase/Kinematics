@@ -15,6 +15,10 @@ namespace Game.Player
 		public float Speed = 0.0f;
 		public float JumpVelocity = 0.0f;
 		public bool CanDoubleJump = false;
+		public float Health = 0.0f;
+		public float Damage = 0.0f;
+		public float BlockHealth = 0.0f;
+		public float BlockCooldown = 0.0f;
 
 		// [boundingbox]
 		private string _boundingBoxSectionName = "boundingbox";

@@ -337,7 +337,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0ncpa")
 }],
-"loop": true,
+"loop": false,
 "name": &"death",
 "speed": 16.0
 }, {
@@ -416,6 +416,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_s1rgi"]
 size = Vector2(80, 156)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fm80t"]
+size = Vector2(80, 160)
+
 [node name="Player" type="CharacterBody2D" unique_id=165373145]
 collision_layer = 2
 script = ExtResource("1_5gtgg")
@@ -424,13 +427,22 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_lvxji")
-animation = &"block"
+animation = &"death"
+frame_progress = 0.87607056
 script = ExtResource("10_h17s1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]
 position = Vector2(-1, 72)
 shape = SubResource("RectangleShape2D_s1rgi")
-script = ExtResource("11_je7p5")
 
 [node name="PlayerConfig" type="Node" parent="." unique_id=1519756736]
 script = ExtResource("12_fm80t")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1824439186]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=305628608]
+position = Vector2(0, 72)
+shape = SubResource("RectangleShape2D_fm80t")
+script = ExtResource("11_je7p5")
