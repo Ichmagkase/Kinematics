@@ -75,7 +75,7 @@ namespace Game
 
 		private void LoadBattleNames()
 		{
-			_musicContainer = GetNode<VBoxContainer>("VBoxContainer/MusicContainer/VBoxContainer");
+			_musicContainer = GetNode<VBoxContainer>("VBoxContainer/Control/MusicContainer/VBoxContainer");
 			if (_musicContainer == null)
 			{
 				GD.PrintErr("failed to get music container for soundtracks");
