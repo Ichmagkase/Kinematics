@@ -1,4 +1,5 @@
 using Godot;
+using System.Linq;
 
 namespace Game.Player
 {
@@ -8,12 +9,40 @@ namespace Game.Player
 		private PlayerSprite _playerSprite;
 		private PlayerConfig _playerConfig;
 		private bool _hasDoubleJumpped = false;
-		private static bool CALLED_FROM_SIGNAL = true;
+		private readonly string[] attackActions = 
+		{
+			PlayerInputActions.Attack1,
+			PlayerInputActions.Attack2,
+		};
+
+		// Since we can receive input from signals and Godot Inputs, we need some protection
+		private readonly object _inputLock = new();
+		private struct PendingInput
+		{
+			public bool Jump;
+			public bool Attack1;
+			public bool Attack2;
+			public bool Block;
+			public Vector2 Movement;
+		}
+		private PendingInput _pendingInput;
 
 		public void HandleActionSignal(string e)
 		{
-			switch (e)
+			GD.Print($"PlayerId {PlayerId}: {e}");
+
+			// The logic will be handled in _PhysicsProcess()
 			{
+				switch (e)
+				{
+					case PlayerInputActions.Jump:      _pendingInput.Jump = true;                    break;
+					case PlayerInputActions.MoveLeft:  _pendingInput.Movement += new Vector2(-1, 0); break;
+					case PlayerInputActions.MoveRight: _pendingInput.Movement += new Vector2(1, 0);  break;
+					case PlayerInputActions.MoveDown:  _pendingInput.Movement += new Vector2(0, 1);  break;
+					case PlayerInputActions.Attack1:   _pendingInput.Attack1 = true;                 break;
+					case PlayerInputActions.Attack2:   _pendingInput.Attack2 = true;                 break;
+					case PlayerInputActions.Block:     _pendingInput.Block = true;                   break;
+				}
 			}
 		}
 
@@ -29,126 +58,112 @@ namespace Game.Player
 
 		public override void _PhysicsProcess(double delta)
 		{
-			Vector2 velocity = Velocity;
+			HandleGravity(delta);
+			lock (_inputLock);
 
-			velocity = HandleGravity(velocity, delta);
-			velocity = HandleJump(velocity);
-			velocity = HandleMovement(velocity);
-			velocity = HandleAttack(velocity);
-			velocity = HandleBlock(velocity);
+			// Merge Godot inputs and signals
+			bool jump = Input.IsActionJustPressed(PlayerInputActions.Jump) || _pendingInput.Jump;
 
-			UpdateAnimation(velocity);
+			Vector2 keyboardDir = Input.GetVector(
+				PlayerInputActions.MoveLeft, PlayerInputActions.MoveRight,
+				PlayerInputActions.MoveUp,   PlayerInputActions.MoveDown);
+			Vector2 movement = keyboardDir + _pendingInput.Movement;
 
-			Velocity = velocity;
+			string? triggeredAction =
+				attackActions.FirstOrDefault(a => Input.IsActionPressed(a))
+				?? (_pendingInput.Attack1 ? PlayerInputActions.Attack1 : null)
+				?? (_pendingInput.Attack2 ? PlayerInputActions.Attack2 : null);
+
+			bool block = Input.IsActionJustPressed(PlayerInputActions.Block) || _pendingInput.Block
+					|| _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName;
+
+			// clear signal state for next frame
+			_pendingInput = default;
+
+			if (jump) HandleJump();
+			HandleMovement(movement);
+			if (triggeredAction != null) HandleAttack(triggeredAction);
+			if (block) HandleBlock();
+
+			UpdateAnimation();
 			MoveAndSlide();
 		}
 
-		private Vector2 HandleGravity(Vector2 velocity, double delta)
+		private void HandleGravity(double delta)
 		{
 			if (!IsOnFloor())
-				velocity += GetGravity() * (float)delta;
-
-			return velocity;
+				Velocity += GetGravity() * (float)delta;
 		}
 
-		private Vector2 HandleJump(Vector2 velocity, bool fromSignal = false)
+		private void HandleJump()
 		{
-			bool canJump = IsOnFloor() && Input.IsActionPressed(PlayerInputActions.Jump);
+			bool canJump = IsOnFloor();
 			bool canDoubleJump = !IsOnFloor()
-								&& Input.IsActionJustPressed(PlayerInputActions.Jump)
-								&& !_hasDoubleJumpped
-								&& _playerConfig.CanDoubleJump;
+				&& !_hasDoubleJumpped
+				&& _playerConfig.CanDoubleJump;
 
-			if (!canJump && !canDoubleJump) return velocity;
-			else if (!canJump) _hasDoubleJumpped = true; // Don't double jump again
-			else _hasDoubleJumpped = false; // Allow double jump if this is the first jump
+			if (!canJump && !canDoubleJump) return;
 
-			if (canJump)
-			{
-				velocity.Y = _playerConfig.JumpVelocity;
-			} 
-			else
-			{
-				velocity.Y = _playerConfig.JumpVelocity;
-			}
-			return velocity;
+			_hasDoubleJumpped = !canJump; // true if double jumping, false if normal jump
+
+			Velocity = new Vector2(Velocity.X, _playerConfig.JumpVelocity);
 		}
 
-		private Vector2 HandleAttack(Vector2 velocity, bool fromSignal = false)
+		private void HandleAttack(string action)
 		{
-			if (!IsOnFloor()) return velocity;
-			if (Input.IsActionJustPressed(PlayerInputActions.Attack1))
+			if (!IsOnFloor()) return;
+			if (action == PlayerInputActions.Attack1)
 			{
 				_playerSprite.Attack1();
-				return velocity;
+				return;
 			}
-			if  (Input.IsActionJustPressed(PlayerInputActions.Attack2))
+			if  (action == PlayerInputActions.Attack2)
 			{
 				_playerSprite.Attack2();
-				return velocity;
+				return;
 			}
-			return velocity;
 		}
 
-		private Vector2 HandleBlock(Vector2 velocity, bool fromSignal = false)
+		private void HandleBlock()
 		{
-			if (!IsOnFloor() || velocity != Vector2.Zero) return velocity;
+			if (!IsOnFloor() || Velocity != Vector2.Zero) return;
 			if (Input.IsActionJustPressed(PlayerInputActions.Block))
 			{
 				_playerSprite.Block();
-				return velocity;
+				return;
 			}
 			else if (Input.IsActionPressed(PlayerInputActions.Block) && _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
 			{
-				return velocity;
+				return;
 	
 			} 
 			else if (_playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
 			{
 				_playerSprite.EndBlock();
 			}
-
-			return velocity;
 		}
 
-		private Vector2 HandleMovement(Vector2 velocity, bool fromSignal = false)
+		private void HandleMovement(Vector2 direction)
 		{
-			Vector2 direction = Input.GetVector(
-				PlayerInputActions.MoveLeft,
-				PlayerInputActions.MoveRight,
-				PlayerInputActions.MoveUp,
-				PlayerInputActions.MoveDown
-			);
-
 			if (direction != Vector2.Zero)
-				velocity.X = direction.X * _playerConfig.Speed;
+				Velocity = new Vector2(direction.X * _playerConfig.Speed, Velocity.Y);
 			else
-				velocity.X = Mathf.MoveToward(velocity.X, 0, _playerConfig.Speed);
-
-			return velocity;
+				Velocity = new Vector2(Mathf.MoveToward(Velocity.X, 0, _playerConfig.Speed), Velocity.Y);
 		}
 
-		private void UpdateAnimation(Vector2 velocity)
+		private void UpdateAnimation()
 		{
 			bool onFloor = IsOnFloor();
-			bool isFalling = !onFloor && velocity.Y >= 0;
-			bool isRising = !onFloor && velocity.Y < 0;
-			bool isMoving = velocity.X != 0;
+			bool isFalling = !onFloor && Velocity.Y >= 0;
+			bool isRising = !onFloor && Velocity.Y < 0;
+			bool isMoving = Velocity.X != 0;
 
 			if (isFalling)  { _playerSprite.JumpDown(); return; }
 			if (isRising)   { _playerSprite.JumpUp();   return; }
 			if (isMoving)
 			{
-				if (velocity.X < 0) 
-				{
-						_playerSprite.FaceLeft();
-						_playerSprite.Run();
-				}
-				if (velocity.X > 0) 
-				{
-						_playerSprite.FaceRight();
-						_playerSprite.Run();
-				}
+				if (Velocity.X < 0) _playerSprite.FaceLeft();
+				else if (Velocity.X > 0) _playerSprite.FaceRight();
 				_playerSprite.Run();
 				return;
 			}

@@ -46,10 +46,10 @@ namespace Game
 				switch (p.PlayerId)
 				{
 					case 1:
-						 EventBus.Instance.PlayerOneAction += p.HandleActionSignal;
+						EventBus.Instance.PlayerOneAction += p.HandleActionSignal;
 						break;
 					case 2:
-						 EventBus.Instance.PlayerTwoAction += p.HandleActionSignal;
+						EventBus.Instance.PlayerTwoAction += p.HandleActionSignal;
 						break;
 					default:
 						GD.PrintErr($"failed to assign singal to player with ID: {p.PlayerId}, no known signal for this id");

@@ -26,10 +26,10 @@ namespace Game.Player
 		private static String _blockAnimationName = "block";
 		public String  BlockAnimationName {get => _blockAnimationName;}
 
-		private static bool _playingAttackingAnimation = false;
+		private bool _playingAttackingAnimation = false;
 		public bool PlayingAttackingAnimation {get => _playingAttackingAnimation;}
 
-		private static bool _playingBlockingAnimation = false;
+		private bool _playingBlockingAnimation = false;
 		public bool PlayingBlockingAnimation {get => _playingBlockingAnimation;}
 
 		private void OnAnimationFinished()
