@@ -252,6 +252,8 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 	// Track which bodies we've already reported to avoid duplicate callbacks
 	// std::map<UINT64, IBody*> currentTrackedBodies;
 	IBody* ppBodies[BODY_COUNT] = { nullptr };
+	UINT64 lastPlayers[2] = { 0, 0 };
+
 
 	IVisualGestureBuilderFrameSource* gestureSources[2] = { nullptr, nullptr };
 	IVisualGestureBuilderFrameReader* gestureReaders[2] = { nullptr, nullptr };
@@ -269,7 +271,12 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 
 		// Keep gesture sources in sync with current tracking IDs
 		for (int i = 0; i < 2; i++) {
-			gestureSources[i]->put_TrackingId(players[i]);
+			
+			if (players[i] != lastPlayers[i]) {
+				gestureSources[i]->put_TrackingId(players[i]);
+				lastPlayers[i] = players[i];
+				continue; // Skip this tick — let the source sync first
+			}
 		}
 		std::cout << "Current tracked players: " << ((players[0] != 0) ? std::to_string(players[0]) : "None") 
 			<< ", " << ((players[1] != 0) ? std::to_string(players[1]) : "None") << std::endl;
@@ -280,6 +287,15 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 			IVisualGestureBuilderFrame* pGestureFrame = nullptr;
 			hr = gestureReaders[i]->CalculateAndAcquireLatestFrame(&pGestureFrame);
 			if (hr == E_PENDING || !pGestureFrame) continue; // not ready this tick, skip
+
+			BOOLEAN isTrackingIdValid = false;
+			pGestureFrame->get_IsTrackingIdValid(&isTrackingIdValid);
+			std::cout << "Player " << i << " (ID=" << players[i] << ") isTrackingIdValid=" << (isTrackingIdValid ? "true" : "false") << std::endl;
+
+			if (!isTrackingIdValid) {
+				pGestureFrame->Release();
+				continue; // source doesn't have a body yet, skip
+			}
 
 			CheckError(hr, "IVisualGestureBuilderFrameReader::CalculateAndAcquireLatestFrame");
 
@@ -293,8 +309,17 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 			for (UINT j = 0; j < gestureCount; ++j) {
 				std::cout << "Checking gesture " << j << " for player " << ((players[i] != 0) ? std::to_string(players[i]) : "None") << std::endl;
 				if (gesturing) {
+					exit(0);
 					break;
 				}
+
+				GestureType gestureType;
+				pGestures[j]->get_GestureType(&gestureType);
+
+				wchar_t gestureName[256];
+				pGestures[j]->get_Name(256, gestureName);
+				std::wprintf(L"Gesture: %s, Type: %s\n", gestureName,
+					gestureType == GestureType_Discrete ? L"Discrete" : L"Continuous");
 
 				IDiscreteGestureResult* pGestureResult = nullptr;
 				hr = pGestureFrame->get_DiscreteGestureResult(pGestures[j], &pGestureResult);
@@ -306,8 +331,13 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 
 					pGestureResult->get_Detected(&isDetected);
 					pGestureResult->get_Confidence(&confidence);
+					UINT capacity = 256;
+					wchar_t gestureName[256];
+					pGestures[j]->get_Name(capacity, gestureName);
 
-					if (isDetected && confidence > 0.5f) {
+					std::wprintf(L"Gesture: %s\n Player: %llu\n Confidence: %f\n\n", gestureName, players[i], confidence);
+
+					if (isDetected && confidence > 0.01f) {
 						UINT capacity = 256;
 						wchar_t gestureName[256];
 						pGestures[j]->get_Name(capacity, gestureName);
@@ -318,11 +348,11 @@ void Sensor::listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> p
 
 					pGestureResult->Release();
 				}
+			}
 
-				if (!gesturing) {
-					std::cout << "No gesture detected for player " << ((players[i] != 0) ? std::to_string(players[i]) : "None") << std::endl;
-					// TODO: player is idle
-				}
+			if (!gesturing) {
+				std::cout << "Player idle:  " << ((players[i] != 0) ? std::to_string(players[i]) : "None") << std::endl;
+				// TODO: player is idle
 			}
 
 			pGestureFrame->Release();

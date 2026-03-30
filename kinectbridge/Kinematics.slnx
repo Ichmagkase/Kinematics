@@ -4,6 +4,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="KinectGestureTest/KinectGestureTest.vcxproj" Id="9259131b-cafa-4483-a0f8-bf3c82e77f6c" />
   <Project Path="KinectVisionLayer/KinectVisionLayer.vcxproj" Id="fb3f1d2a-ffba-47fa-a5ac-b3084520cc28" />
-  <Project Path="TestKinectVisionLayer/TestKinectVisionLayer.vcxproj" Id="b555cff8-1a41-42ea-a502-c4874ace84f5" />
 </Solution>
