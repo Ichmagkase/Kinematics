@@ -1,12 +1,13 @@
 using Godot;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Game.Player
 {
 	public partial class Player : CharacterBody2D
 	{
 		public int PlayerId;
-		private PlayerSprite _playerSprite;
+		public PlayerSprite _playerSprite;
 		private PlayerConfig _playerConfig;
 		private bool _hasDoubleJumpped = false;
 		private readonly string[] attackActions = 
@@ -14,6 +15,8 @@ namespace Game.Player
 			PlayerInputActions.Attack1,
 			PlayerInputActions.Attack2,
 		};
+		private readonly HashSet<Player> _overlappingPlayers = new();
+		private readonly HashSet<Player> _playersHitThisAttack = new();
 
 		// Since we can receive input from signals and Godot Inputs, we need some protection
 		private readonly object _inputLock = new();
@@ -27,10 +30,25 @@ namespace Game.Player
 		}
 		private PendingInput _pendingInput;
 
+		private float _health;
+		public float Health
+		{
+			get => _health;
+			set
+			{
+				_health = value;
+				if (_health <= 0)
+					OnDeath();
+			}
+		}
+		public bool OfficallyDied = false;		
+		public float BlockHealth;
+		public float BlockCooldown;
+		public bool OnBlockCooldown;
+		public float Damage;
+
 		public void HandleActionSignal(string e)
 		{
-			GD.Print($"PlayerId {PlayerId}: {e}");
-
 			// The logic will be handled in _PhysicsProcess()
 			{
 				switch (e)
@@ -54,10 +72,29 @@ namespace Game.Player
 			}
 			_playerConfig = GetNode<PlayerConfig>("PlayerConfig");
 			_playerSprite = GetNode<PlayerSprite>("AnimatedSprite2D");
+
+			Health = _playerConfig.Health;
+			BlockHealth = _playerConfig.BlockHealth;
+			BlockCooldown = _playerConfig.BlockCooldown;
+			OnBlockCooldown = false;
+			Damage = _playerConfig.Damage;
+
+			var area = GetNode<Area2D>("Area2D");
+			area.BodyEntered += OnBodyEntered;
+			area.BodyExited += OnBodyExited;
+
+			// Copy to avoid shared shapes across players
+			var areaShape = area.GetNode<CollisionShape2D>("CollisionShape2D");
+			var originalRect = (RectangleShape2D)areaShape.Shape;
+			var newRect = new RectangleShape2D();
+			newRect.Size = originalRect.Size;
+			areaShape.Shape = newRect;
 		}
 
 		public override void _PhysicsProcess(double delta)
 		{
+			if (Health < 0) return;
+
 			HandleGravity(delta);
 			lock (_inputLock);
 
@@ -74,16 +111,42 @@ namespace Game.Player
 				?? (_pendingInput.Attack1 ? PlayerInputActions.Attack1 : null)
 				?? (_pendingInput.Attack2 ? PlayerInputActions.Attack2 : null);
 
-			bool block = Input.IsActionJustPressed(PlayerInputActions.Block) || _pendingInput.Block
-					|| _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName;
+			bool blockPressed = Input.IsActionJustPressed(PlayerInputActions.Block) || _pendingInput.Block;
+			bool isBlocking = _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName;
 
 			// clear signal state for next frame
 			_pendingInput = default;
 
+			if (_playerSprite.PlayingAttackingAnimation)
+			{
+				foreach (var p in _overlappingPlayers)
+				{
+					if (!_playersHitThisAttack.Contains(p))
+					{
+						HandlePlayerAttackOnPlayer(p);
+						_playersHitThisAttack.Add(p);
+					}
+				}
+			}
+			else
+			{
+				_playersHitThisAttack.Clear();
+			}
+
+
+			if (OnBlockCooldown)
+			{
+				HandleBlockCooldown(delta);
+			}
+
+			// End block if blocking and another action is given
+			if (isBlocking && (jump || triggeredAction != null || movement != Vector2.Zero))
+				HandleEndBlock();
+
 			if (jump) HandleJump();
 			HandleMovement(movement);
 			if (triggeredAction != null) HandleAttack(triggeredAction);
-			if (block) HandleBlock();
+			if (blockPressed && !isBlocking && !OnBlockCooldown) HandleBlock();
 
 			UpdateAnimation();
 			MoveAndSlide();
@@ -93,6 +156,10 @@ namespace Game.Player
 		{
 			if (!IsOnFloor())
 				Velocity += GetGravity() * (float)delta;
+				if (Velocity.Y > 0)
+				{
+					Velocity += GetGravity() * (float)delta;
+				}
 		}
 
 		private void HandleJump()
@@ -127,22 +194,24 @@ namespace Game.Player
 		private void HandleBlock()
 		{
 			if (!IsOnFloor() || Velocity != Vector2.Zero) return;
-			if (Input.IsActionJustPressed(PlayerInputActions.Block))
-			{
-				_playerSprite.Block();
-				return;
-			}
-			else if (Input.IsActionPressed(PlayerInputActions.Block) && _playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
-			{
-				return;
-	
-			} 
-			else if (_playerSprite.GetCurrentAnimationName() == _playerSprite.BlockAnimationName)
-			{
-				_playerSprite.EndBlock();
-			}
+			_playerSprite.Block();
 		}
 
+		private void HandleEndBlock()
+		{
+			_playerSprite.EndBlock();
+		}
+
+		private void HandleBlockCooldown(double delta)
+		{
+			BlockCooldown -= (float)delta;
+			if (BlockCooldown <= 0)
+			{
+				BlockCooldown = _playerConfig.BlockCooldown;
+				BlockHealth = _playerConfig.BlockHealth;
+				OnBlockCooldown = false;
+			}
+		}
 		private void HandleMovement(Vector2 direction)
 		{
 			if (direction != Vector2.Zero)
@@ -170,5 +239,52 @@ namespace Game.Player
 
 			_playerSprite.Idle();
 		}
+
+		private void HandlePlayerAttackOnPlayer(Player otherPlayer)
+		{
+			var isFacingTowardMe = otherPlayer._playerSprite.FlipH != _playerSprite.FlipH;
+			var theyAreBlocking = otherPlayer._playerSprite.PlayingBlockingAnimation;
+
+			if (!theyAreBlocking /* || theyAreBlocking && !isFacingTowardMe*/)
+			{
+				otherPlayer.Health -= _playerConfig.Damage;
+			}
+			else if (theyAreBlocking)
+			{
+				otherPlayer.BlockHealth -= 1;
+				if (otherPlayer.BlockHealth <= 0)
+				{
+					GD.Print($"PlayerId[{PlayerId}]: Handling Block Cooldown!");
+					otherPlayer.Health -=  _playerConfig.Damage * 1.2f;
+					otherPlayer.OnBlockCooldown = true;
+					otherPlayer._playerSprite.EndBlock();
+				}
+			}
+
+			GD.Print($"Player[{PlayerId}]: Health: {Health}");
+			GD.Print($"Player[{otherPlayer.PlayerId}]: Health: {otherPlayer.Health}");
+
+		}
+
+		private void OnBodyEntered(Node2D body)
+		{
+			if (body != this && body is Player otherPlayer)
+				_overlappingPlayers.Add(otherPlayer);
+		}
+
+		private void OnBodyExited(Node2D body)
+		{
+			if (body is Player otherPlayer)
+				if (_overlappingPlayers.Contains(otherPlayer))
+				{
+					_overlappingPlayers.Remove(otherPlayer);
+				}
+		}
+
+		private void OnDeath()
+		{
+			_playerSprite.Death();
+		}
+
 	}
 }

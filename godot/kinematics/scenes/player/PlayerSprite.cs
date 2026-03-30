@@ -14,6 +14,9 @@ namespace Game.Player
 		private static String _idleAnimationName = "idle";
 		public String IdleAnimationName {get => _idleAnimationName;}
 
+		private static String _deathAnimationName = "death";
+		public String DeathAnimationName {get => _deathAnimationName;}
+
 		private static String _runAnimationName = "run";
 		public String RunAnimationName {get => _runAnimationName;}
 
@@ -32,12 +35,20 @@ namespace Game.Player
 		private bool _playingBlockingAnimation = false;
 		public bool PlayingBlockingAnimation {get => _playingBlockingAnimation;}
 
+		private bool _playingDeathAnimation = false;
+		public bool PlayingDeathAnimation {get => _playingDeathAnimation;}
+
 		private void OnAnimationFinished()
 		{
 			if (_playingAttackingAnimation)
 			{
 				_playingAttackingAnimation = false;
 				Idle(); 
+			}
+			if (_playingDeathAnimation)
+			{
+				var nextScene = GD.Load<PackedScene>(GlobalConfig.Instance.HomeScenePath);
+				GetTree().ChangeSceneToPacked(nextScene);
 			}
 		}
 		public void JumpUp()
@@ -109,6 +120,14 @@ namespace Game.Player
 		{
 			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			Play(_idleAnimationName);
+		}
+
+		public void Death()
+		{
+			_playingAttackingAnimation = false;
+			_playingBlockingAnimation = false;
+			_playingDeathAnimation = true;
+			Play(_deathAnimationName);
 		}
 
 		public StringName GetCurrentAnimationName()
