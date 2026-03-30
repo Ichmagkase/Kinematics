@@ -10,7 +10,7 @@ namespace Game
 		private void _OnFinished()
 		{
 			Play();
-        }
+		}
 
 		public override void _Ready()
 		{

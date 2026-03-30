@@ -363,10 +363,10 @@ position = Vector2(-555.00006, 308)
 position = Vector2(-1474, 308)
 
 [node name="Grass Platform8" parent="." unique_id=2142659240 instance=ExtResource("3_wn633")]
-position = Vector2(-1266, 15.999985)
+position = Vector2(-1368, 114.99999)
 
 [node name="Grass Platform9" parent="." unique_id=1512336742 instance=ExtResource("3_wn633")]
-position = Vector2(-346.00003, 7.9999847)
+position = Vector2(-346, -106.99999)
 
 [node name="Grass Platform4" parent="." unique_id=1354786510 instance=ExtResource("3_wn633")]
 position = Vector2(-1645, 563)
@@ -397,3 +397,15 @@ position = Vector2(229.00003, 563)
 
 [node name="Grass Platform18" parent="." unique_id=783323277 instance=ExtResource("3_wn633")]
 position = Vector2(-190.00002, 563)
+
+[node name="Grass Platform19" parent="." unique_id=412413905 instance=ExtResource("3_wn633")]
+position = Vector2(-1161, 115)
+
+[node name="Grass Platform20" parent="." unique_id=807442404 instance=ExtResource("3_wn633")]
+position = Vector2(-1263.0001, -103.000015)
+
+[node name="Grass Platform21" parent="." unique_id=1378604845 instance=ExtResource("3_wn633")]
+position = Vector2(-450.00006, 115)
+
+[node name="Grass Platform22" parent="." unique_id=523804883 instance=ExtResource("3_wn633")]
+position = Vector2(-241.00012, 115)
