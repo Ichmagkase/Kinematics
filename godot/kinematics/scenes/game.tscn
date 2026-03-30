@@ -203,3 +203,18 @@ script = ExtResource("4_lbhrr")
 
 [node name="ProcessCreator" type="Node" parent="." unique_id=1115231477]
 script = ExtResource("5_iywne")
+
+[node name="PlayerHUDContainer" type="VBoxContainer" parent="." unique_id=84437371]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -112.0
+offset_top = 46.0
+offset_right = 301.0
+offset_bottom = 228.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 5

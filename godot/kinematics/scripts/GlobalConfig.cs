@@ -16,6 +16,8 @@ namespace Game
 		public string GameAudioThemesPath;
 		public string GameAudioPath;
 		public string PlayerPath;
+		public string PlayerHudPath;
+		public string PlayerSoundEffectPath;
 		public int PlayerCount;
 		public List<string> ToolTips;
 
@@ -33,6 +35,8 @@ namespace Game
 		private const string KeyTooltips           = "tooltips";
 		private const string KeyPlayerCount		   = "player_count";
 		private const string KeyPlayerPath		   = "player_scene";
+		private const string KeyPlayerHudPath 	   = "player_hud_scene";
+		private const string KeyPlayerSoundEffectPath = "player_sound_effects";
 
 		// Default values
 		private const string DefaultGameScene        = "res://scenes/game-menu-layer.tscn";
@@ -43,7 +47,9 @@ namespace Game
 		private const string DefaultAudioThemesPath  = "res://music/themes";
 		private const string DefaultAudioPath        = "res://music/themes/battle-theme-main.wav";
 		private const string DefaultPlayerPath	 	 = "res://scenes/player/player.tscn";
+		private const string DefaultPlayerHudPath	 = "res://scenes/ui/player/players-hud.tscn";
 		private const int DefaultPlayerCount 	 	 = 2;
+		private const string DefaultPlayerSoundEffectPath = "res://music/sound-effects/player";
 
 		private ConfigFile _globalConfigFile;
 
@@ -74,7 +80,9 @@ namespace Game
 			GameAudioThemesPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyAudioThemes,      DefaultAudioThemesPath);
 			GameAudioPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyCurrentThemePath, DefaultAudioPath);
 			PlayerPath          = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerPath,       DefaultPlayerPath);
+			PlayerHudPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerHudPath,       DefaultPlayerHudPath);
 			PlayerCount		    = (int)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerCount, 	  DefaultPlayerCount);
+			PlayerSoundEffectPath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerSoundEffectPath, 	  DefaultPlayerSoundEffectPath);
 
 			ToolTips = new List<string>();
 			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());
