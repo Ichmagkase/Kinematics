@@ -14,9 +14,12 @@ void GestureListener(struct Data data) {
 int main() {
 	Sensor sensor;
 
+	// AWAIT PLAYERS READY ... Do this once to determine relative position
+	std::array<IBody*, 2> players;
+	players = sensor.awaitPlayersReady();
+
 	while (true) {
 		Sleep(1000); // Simulate waiting for sensor data
-		sensor.listen(&GestureListener);		
-		// ipc.sendEventPayload(getRandomData());
+		sensor.listen(&GestureListener, players);		
 	}
 }

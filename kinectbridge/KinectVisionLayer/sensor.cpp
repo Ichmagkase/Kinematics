@@ -78,57 +78,80 @@ Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor
 		exit(1);
 	}
 
-	//gestureCount = 0;
-	//if (FAILED(pGestureDatabase->get_AvailableGesturesCount(&gestureCount))) {
-	//	std::cerr << "Failed to get gesture count" << std::endl;
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-	 
-	//IGesture **gestures = new IGesture * [gestureCount];
-	//pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
+	gestureCount = 0;
+	if (FAILED(pGestureDatabase->get_AvailableGesturesCount(&gestureCount))) {
+		std::cerr << "Failed to get gesture count" << std::endl;
+		pGestureDatabase->Release();
+		pBodyFrameSource->Release();
+		pSensor->Release();
+		exit(1);
+	}
+	
+	IGesture **gestures = new IGesture* [gestureCount];
+	pGestureDatabase->get_AvailableGestures(gestureCount, gestures);
 
-	//// Create gesture frame source
-	//if (FAILED(CreateVisualGestureBuilderFrameSource(pSensor, 1, &pGestureFrameSource))) {
-	//	std::cerr << "Failed to create gesture frame source" << std::endl;
-	//	delete[] gestures;
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Add gestures to track
-	//if (FAILED(pGestureFrameSource->AddGestures(gestureCount, gestures))) {
-	//	std::cerr << "Failed to add gestures" << std::endl;
-	//	delete[] gestures;
-	//	pGestureFrameSource->Release();
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Create gesture frame reader
-	//if (FAILED(pGestureFrameSource->OpenReader(&pGestureFrameReader))) {
-	//	std::cerr << "Failed to open gesture frame reader" << std::endl;
-	//	delete[] gestures;
-	//	pGestureFrameSource->Release();
-	//	pGestureDatabase->Release();
-	//	pBodyFrameSource->Release();
-	//	pSensor->Release();
-	//	exit(1);
-	//}
-
-	//// Store database and clean up gestures array (but not individual gestures - they're referenced by the source)
-	//this->pGestureDatabase = pGestureDatabase;
-	//this->pGestures = gestures;
-	//this->gestureCount = gestureCount;
+	// Store database and clean up gestures array (but not individual gestures - they're referenced by the source)
+	this->pGestureDatabase = pGestureDatabase;
+	this->pGestures = gestures;
+	this->gestureCount = gestureCount;
 }
 
-void Sensor::listen(void(*GestureCallback)(struct Data)) {
+/**
+ * Wait for 2 tracked players and return them
+ * Also handle relative position of players here
+ */
+std::array<IBody*, 2> Sensor::awaitPlayersReady() {
+	std::cout << "Waiting for 2 players..." << std::endl;
+
+	IBody* ppBodies[BODY_COUNT] = { nullptr };
+	int detectedCount = 0;
+	std::array<IBody*, 2> players = {};
+
+	while (detectedCount < 2) {
+		IBodyFrame* pBodyFrame = nullptr;
+		if (FAILED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {}
+		if (FAILED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {}
+
+		detectedCount = 0;
+		players[0] = nullptr;
+		players[1] = nullptr;
+
+		for (int i = 0; i < BODY_COUNT; ++i) {
+			BOOLEAN bTracked = false;
+			if (ppBodies[i])
+				if (FAILED(ppBodies[i]->get_IsTracked(&bTracked))) {}
+			
+			if (bTracked) {
+				players[detectedCount] = ppBodies[i];
+				detectedCount++;
+			}
+		}
+		pBodyFrame->Release();
+	}
+
+	// now sort the 2 players by position from left to right
+	Joint player1_joints[JointType_Count];
+	if (FAILED(players[0]->GetJoints(JointType_Count, player1_joints))) {}
+	float player1_head_x = player1_joints[JointType_Head].Position.X;
+
+	Joint player2_joints[JointType_Count];
+	if (FAILED(players[1]->GetJoints(JointType_Count, player2_joints))) {}
+	float player2_head_x = player2_joints[JointType_Head].Position.X;
+
+	// Sort left most player (rightmost from camera perspective) to be first
+	if (player1_head_x < player2_head_x) {
+		IBody* tmp = players[0];
+		players[0] = players[1];
+		players[1] = tmp;
+	}
+
+	return players;
+}
+
+/**
+ * Ensure players do not go out of bounds and detect gestures
+ */
+void Sensor::listen(void(*GestureCallback)(struct Data), std::array<IBody*, 2> players) {
 	std::cout << "Listening for persons..." << std::endl;
 
 	// Detection loop
@@ -144,76 +167,89 @@ void Sensor::listen(void(*GestureCallback)(struct Data)) {
 		IBodyFrame* pBodyFrame = nullptr;
 
 		// Get the latest body frame
-		if (SUCCEEDED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {
+		if (FAILED(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame)) && pBodyFrame) {}
 
-			// Get the body data
-			if (SUCCEEDED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {
-				bPersonDetected = false;
+		// Get the body data
+		if (FAILED(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies))) {}
 
+		bPersonDetected = false;
 
-				// TODO 1: Populate currentTrackedBodies with tracked IDs:Bodies of players
-				for (int i = 0; i < BODY_COUNT; ++i) {
-					if (ppBodies[i]) {
-						BOOLEAN bTracked = false;
-
-						if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
-							UINT64 trackingId = 0;
-							if (SUCCEEDED(ppBodies[i]->get_TrackingId(&trackingId)) && trackingId) {
-								currentTrackedBodies[trackingId] = ppBodies[i];
-							}
-						}
-
+		// TODO 1: Populate currentTrackedBodies with tracked IDs:Bodies of players
+		for (int i = 0; i < BODY_COUNT; ++i) {
+			if (ppBodies[i]) {
+				BOOLEAN bTracked = false;
+				if (SUCCEEDED(ppBodies[i]->get_IsTracked(&bTracked)) && bTracked) {
+					UINT64 trackingId = 0;
+					if (SUCCEEDED(ppBodies[i]->get_TrackingId(&trackingId)) && trackingId) {
+						currentTrackedBodies[trackingId] = ppBodies[i];
 					}
 				}
 
-				// TODO 2: Iterate over currentTrackedBodies, calculate gesture, determine position with body data
-				IBody *most_left = ppBodies[0];
-				IBody *most_right = ppBodies[0];
-				for (auto const& [BodyId, Body] : currentTrackedBodies) {
-					Joint joints[JointType_Count];
-					if (SUCCEEDED(Body->GetJoints(JointType_Count, joints))) {
-						float x = joints[JointType_Head].Position.X;
+			}
+		}
 
-						Joint leftJoints[JointType_Count];
-						most_left->GetJoints(JointType_Count, leftJoints);
+		// TODO 2: Iterate over currentTrackedBodies, calculate gesture, determine position with body data
+		// TODO: You can now use this known tracking data to find the gestures of each 
+		// TODO: Pull assignments out of conditions to pull HRESULT and print better error messages
 
-						Joint rightJoints[JointType_Count];
-						most_right->GetJoints(JointType_Count, rightJoints);
+		for (auto const& [BodyId, Body] : currentTrackedBodies) {
+			if (FAILED(CreateVisualGestureBuilderFrameSource(pSensor, BodyId, &pGestureFrameSource))) {}
 
-						if (x < leftJoints[JointType_Head].Position.X) {
-							most_left = Body;
-						}
-						if (x > rightJoints[JointType_Head].Position.X) {
-							most_right = Body;
-						}
+			if (FAILED(pGestureFrameSource->AddGestures(gestureCount, pGestures))) {}
+
+			if (FAILED(pGestureFrameSource->OpenReader(&pGestureFrameReader))) {}
+
+			IVisualGestureBuilderFrame* pGestureFrame = nullptr;
+			if (FAILED(pGestureFrameReader->CalculateAndAcquireLatestFrame(&pGestureFrame)) && pGestureFrame) {}
+
+			BOOLEAN gesturing = false; 
+
+			for (int i = 0; i < gestureCount; ++i) {
+				if (gesturing) {
+					break;
+				}
+
+				IDiscreteGestureResult* pGestureResult = nullptr;
+				if (FAILED(pGestureFrame->get_DiscreteGestureResult(pGestures[i], &pGestureResult))) {}
+
+				if (pGestureResult) {
+					BOOLEAN isDetected = false;
+					float confidence = 0.0f;
+
+					pGestureResult->get_Detected(&isDetected);
+					pGestureResult->get_Confidence(&confidence);
+
+					if (isDetected && confidence > 0.5f) {
+						UINT capacity = 256;
+						wchar_t gestureName[256];
+						pGestures[i]->get_Name(capacity, gestureName);
+
+						std::wprintf(L"Detected gesture: %s (confidence: %.2f) from player %llu\n", gestureName, confidence, BodyId);
+						gesturing = true;
 					}
-				}
-				
-				BOOLEAN left_is_tracked;
-				most_left->get_IsTracked(&left_is_tracked);
-				BOOLEAN right_is_tracked;
-				most_right->get_IsTracked(&right_is_tracked);
-				if (left_is_tracked && right_is_tracked) {
-					UINT64 tracking_id;
-					most_left->get_TrackingId(&tracking_id);
-					std::cout << "Player most left: " << tracking_id << std::endl;
-					most_right->get_TrackingId(&tracking_id);
-					std::cout << "Player most right: " << tracking_id << std::endl;
+
+					pGestureResult->Release();
 				}
 
-				// Update tracked bodies for next frame
-				// Print status every 30 frames
-				if (frameCount % 30 == 0) {
-					std::cout << "Frame " << frameCount << ": " << ((currentTrackedBodies.size() > 0) ? "PERSON PRESENT" : "No person")
-						<< " (Tracking " << currentTrackedBodies.size() << " bodies)" << std::endl;
+				if (!gesturing) {
+					// TODO: player is idle
 				}
 			}
 
-			pBodyFrame->Release();
+			pGestureFrame->Release();
 		}
 
+		// Update tracked bodies for next frame
+		// Print status every 30 frames
+		if (frameCount % 30 == 0) {
+			std::cout << "Frame " << frameCount << ": " << ((currentTrackedBodies.size() > 0) ? "PERSON PRESENT" : "No person")
+				<< " (Tracking " << currentTrackedBodies.size() << " bodies)" << std::endl;
+		}
+
+		pBodyFrame->Release();
+
 		frameCount++;
-		Sleep(33);  // ~30 FPS
+		Sleep(33);  // ~30 FPS FOR DEBUG PURPOSES ONLY
 	}
 }
 
