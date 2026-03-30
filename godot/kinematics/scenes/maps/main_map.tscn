@@ -330,7 +330,7 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="main-map" type="TileMap" unique_id=1408385878]
+[node name="MainMap" type="TileMap" unique_id=1408385878]
 tile_set = SubResource("TileSet_ma2fm")
 format = 2
 
@@ -345,16 +345,16 @@ autoplay = "default"
 frame_progress = 0.12648073
 
 [node name="Grass Platform" parent="." unique_id=454118454 instance=ExtResource("3_wn633")]
-position = Vector2(-1266, 199)
+position = Vector2(-1263, 308)
 
 [node name="Grass Platform2" parent="." unique_id=324408668 instance=ExtResource("3_wn633")]
 position = Vector2(-136, 308)
 
 [node name="Grass Platform3" parent="." unique_id=71912640 instance=ExtResource("3_wn633")]
-position = Vector2(-1056, 305)
+position = Vector2(-1056, 308.00003)
 
 [node name="Grass Platform5" parent="." unique_id=1442185860 instance=ExtResource("3_wn633")]
-position = Vector2(-346.00003, 196)
+position = Vector2(-346, 308)
 
 [node name="Grass Platform6" parent="." unique_id=1634823681 instance=ExtResource("3_wn633")]
 position = Vector2(-555.00006, 308)
@@ -363,10 +363,10 @@ position = Vector2(-555.00006, 308)
 position = Vector2(-1474, 308)
 
 [node name="Grass Platform8" parent="." unique_id=2142659240 instance=ExtResource("3_wn633")]
-position = Vector2(-1266, -85)
+position = Vector2(-1266, 15.999985)
 
 [node name="Grass Platform9" parent="." unique_id=1512336742 instance=ExtResource("3_wn633")]
-position = Vector2(-346, -85)
+position = Vector2(-346.00003, 7.9999847)
 
 [node name="Grass Platform4" parent="." unique_id=1354786510 instance=ExtResource("3_wn633")]
 position = Vector2(-1645, 563)
