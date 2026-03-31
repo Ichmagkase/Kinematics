@@ -49,7 +49,7 @@ jobs:
                   mkdir godot\kinematics\target
                   .\godotengine\godot.exe --headless --path godot\kinematics --export-release "Windows Desktop" target\Kinematics.exe
 
-            - name: Package Kinematics game and Kinect bridge binary into one folder
+            - name: Package Kinematics game and Kinect bridge files into one folder
               run: |
                   mv kinectbridge\KinectVisionLayer\x64\Release\KinectVisionLayer.exe godot\kinematics\target\KinectVisionLayer.exe
                   mv kinectbridge\KinectVisionLayer\gestures.gbd godot\kinematics\target\gestures.gbd
