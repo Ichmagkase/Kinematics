@@ -60,7 +60,7 @@ namespace Game
 			int k = 0;
 			foreach (string path in fullPaths)
 			{
-				if (Regex.IsMatch(path, pattern))
+				if (Regex.IsMatch(path, pattern) && path != _config.MainMenuThemePath)
 				{
 					_battleThemesPaths.Add(path);
 					_battleThemesNames.Add(files[k].Substring(0, files[k].Length - 4));

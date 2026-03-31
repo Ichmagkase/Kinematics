@@ -18,6 +18,7 @@ namespace Game
 		public string PlayerPath;
 		public string PlayerHudPath;
 		public string PlayerSoundEffectPath;
+		public string MainMenuThemePath;
 		public int PlayerCount;
 		public List<string> ToolTips;
 
@@ -37,6 +38,7 @@ namespace Game
 		private const string KeyPlayerPath		   = "player_scene";
 		private const string KeyPlayerHudPath 	   = "player_hud_scene";
 		private const string KeyPlayerSoundEffectPath = "player_sound_effects";
+		private const string KeyMainMenuThemePath = "main_menu_theme_path";
 
 		// Default values
 		private const string DefaultGameScene        = "res://scenes/game-menu-layer.tscn";
@@ -50,6 +52,7 @@ namespace Game
 		private const string DefaultPlayerHudPath	 = "res://scenes/ui/player/players-hud.tscn";
 		private const int DefaultPlayerCount 	 	 = 2;
 		private const string DefaultPlayerSoundEffectPath = "res://music/sound-effects/player";
+		private const string DefaultMainMenuThemePath = "res://music/themes/main-menu.wav";
 
 		private ConfigFile _globalConfigFile;
 
@@ -83,6 +86,7 @@ namespace Game
 			PlayerHudPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerHudPath,       DefaultPlayerHudPath);
 			PlayerCount		    = (int)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerCount, 	  DefaultPlayerCount);
 			PlayerSoundEffectPath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerSoundEffectPath, 	  DefaultPlayerSoundEffectPath);
+			MainMenuThemePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyMainMenuThemePath, 	  DefaultMainMenuThemePath);
 
 			ToolTips = new List<string>();
 			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());
