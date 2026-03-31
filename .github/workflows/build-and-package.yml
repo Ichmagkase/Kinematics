@@ -5,6 +5,9 @@ on:
         branches:
             - "master"
 
+env:
+    GODOT_VERSION: 4.6.1
+
 jobs:
     build:
         runs-on: windows-latest
@@ -28,10 +31,8 @@ jobs:
 
             - name: Set up Godot (with C#/Mono support) to build Kinematics
               run: |
-                  # TODO: Set Godot version as GitHub env var
-
-                  $engine-url = "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_mono_win64.zip"
-                  $export-templates-url = "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_mono_export_templates.tpz"
+                  $engine-url = "https://github.com/godotengine/godot/releases/download/$GODOT_VERSION-stable/Godot_v$GODOT_VERSION-stable_mono_win64.zip"
+                  $export-templates-url = "https://github.com/godotengine/godot/releases/download/$GODOT_VERSION-stable/Godot_v$GODOT_VERSION-stable_mono_export_templates.tpz"
 
                   # Install Godot engine
                   Invoke-WebRequest -Uri $engine-url -OutFile godotengine.zip
@@ -41,7 +42,7 @@ jobs:
 
                   # Install export templates needed to export game into a binary
                   Invoke-WebRequest -Uri $export-templates-url -OutFile exporttemplates.tpz
-                  Expand-Archive -Path exporttemplates.tpz -DestinationPath %APPDATA%\Godot\export_templates\4.6.1.stable.mono\
+                  Expand-Archive -Path exporttemplates.tpz -DestinationPath %APPDATA%\Godot\export_templates\$GODOT_VERSION.stable.mono\
 
             - name: Build Kinematics with Godot
               run: |
