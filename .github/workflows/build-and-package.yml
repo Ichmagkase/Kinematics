@@ -1,0 +1,59 @@
+name: Build and Package Kinematics
+
+on:
+    push:
+        branches:
+            - "master"
+
+jobs:
+    build:
+        runs-on: windows-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+
+            - name: Set up MSBuild to build Kinect bridge
+              uses: microsoft/setup-msbuild@v3
+              with:
+                  msbuild-architecture: x64
+
+            - name: Build Kinect bridge with MSBuild
+              run: msbuild kinectbridge\KinectVisionLayer\KinectVisionLayer.vcxproj -p:Configuration=Release -p:Platform=x64
+
+            - name: Set up .NET SDK to use Godot with C#/Mono support
+              uses: actions/setup-dotnet@v5
+              with:
+                  dotnet-version: "10.0.x"
+
+            - name: Set up Godot (with C#/Mono support) to build Kinematics
+              run: |
+                  # TODO: Set Godot version as GitHub env var
+
+                  $engine-url = "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_mono_win64.zip"
+                  $export-templates-url = "https://github.com/godotengine/godot/releases/download/4.6.1-stable/Godot_v4.6.1-stable_mono_export_templates.tpz"
+
+                  # Install Godot engine
+                  Invoke-WebRequest -Uri $engine-url -OutFile godotengine.zip
+                  Expand-Archive -Path godotengine.zip -DestinationPath godotengine
+                  # Rename binary to just "godot.exe" for ease of use
+                  Get-ChildItem -Filter "godotengine\Godot*.exe" | Rename-Item -NewName "godotengine\godot.exe"
+
+                  # Install export templates needed to export game into a binary
+                  Invoke-WebRequest -Uri $export-templates-url -OutFile exporttemplates.tpz
+                  Expand-Archive -Path exporttemplates.tpz -DestinationPath %APPDATA%\Godot\export_templates\4.6.1.stable.mono\
+
+            - name: Build Kinematics with Godot
+              run: |
+                  mkdir godot\kinematics\target
+                  .\godotengine\godot.exe --headless --path godot\kinematics --export-release "Windows Desktop" target\Kinematics.exe
+
+            - name: Package Kinematics game and Kinect bridge binary into one folder
+              run: |
+                  mv kinectbridge\KinectVisionLayer\x64\Release\KinectVisionLayer.exe godot\kinematics\target\KinectVisionLayer.exe
+
+            - name: Upload packaged game as a GitHub Artifact
+              uses: actions/upload-artifact@v6
+              with:
+                  name: kinematics
+                  path: godot\kinematics\target
