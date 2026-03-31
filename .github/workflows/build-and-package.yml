@@ -51,6 +51,7 @@ jobs:
             - name: Package Kinematics game and Kinect bridge binary into one folder
               run: |
                   mv kinectbridge\KinectVisionLayer\x64\Release\KinectVisionLayer.exe godot\kinematics\target\KinectVisionLayer.exe
+                  mv kinectbridge\KinectVisionLayer\gestures.gbd godot\kinematics\target\gestures.gbd
 
             - name: Upload packaged game as a GitHub Artifact
               uses: actions/upload-artifact@v6
