@@ -75,120 +75,155 @@ void debugGestures() {
 	hr = pGestureDatabase->get_AvailableGestures(gestureCount, pGestures);
 	CheckError(hr, "IVisualGestureBuilderDatabase::get_AvailableGestures");
 
-	IBody* ppBodies[BODY_COUNT] = { nullptr };
-	UINT64 player1_id = 0;
-
-	// Set up gesture source and reader (tracking ID will be updated in the loop)
+	// --- FIX 1: INITIALIZE VGB OUTSIDE THE LOOP ---
+	// Create the source with a tracking ID of 0 (dormant state)
 	hr = CreateVisualGestureBuilderFrameSource(pSensor, 0, &gestureSource);
 	CheckError(hr, "CreateVisualGestureBuilderFrameSource");
 
-	gestureSource->AddGestures(gestureCount, pGestures);
-	gestureSource->OpenReader(&gestureReader);
+	hr = gestureSource->AddGestures(gestureCount, pGestures);
+	CheckError(hr, "AddGestures");
+
+	for (UINT i = 0; i < gestureCount; ++i) {
+		gestureSource->SetIsEnabled(pGestures[i], true);
+	}
+
+	hr = gestureSource->OpenReader(&gestureReader);
+	CheckError(hr, "OpenReader");
+	// ----------------------------------------------
+
+	IBody* ppBodies[BODY_COUNT] = { nullptr };
+	UINT64 player1_id = 0;
+	UINT64 last_tracking_id = 0;
 
 	std::cout << "Entering main loop" << std::endl;
 
 	// Main gesture detection loop
 	while (true) {
-		// Re-acquire body frame each tick to keep player1_id fresh
+		// 1. INDEPENDENTLY poll for Body Frames to keep Tracking ID updated
 		IBodyFrame* pBodyFrame = nullptr;
 		hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
-		if (hr == E_PENDING || !pBodyFrame) {
-			Sleep(33);
-			continue;
-		}
 
-		hr = pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies);
-		pBodyFrame->Release();
-		if (FAILED(hr)) continue;
+		if (SUCCEEDED(hr) && pBodyFrame) {
+			hr = pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies);
+			pBodyFrame->Release();
 
-		// Find the first tracked body
-		player1_id = 0;
-		for (int i = 0; i < BODY_COUNT; ++i) {
-			BOOLEAN bTracked = false;
-			if (ppBodies[i]) {
-				ppBodies[i]->get_IsTracked(&bTracked);
-				if (bTracked) {
-					ppBodies[i]->get_TrackingId(&player1_id);
-					break;
+			if (SUCCEEDED(hr)) {
+				player1_id = 0; // Reset to see if player is still in THIS frame
+				for (int i = 0; i < BODY_COUNT; ++i) {
+					BOOLEAN bTracked = false;
+					if (ppBodies[i]) {
+						ppBodies[i]->get_IsTracked(&bTracked);
+						if (bTracked) {
+							ppBodies[i]->get_TrackingId(&player1_id);
+							break;
+						}
+					}
+				}
+
+				for (int i = 0; i < BODY_COUNT; ++i) {
+					if (ppBodies[i]) {
+						ppBodies[i]->Release();
+						ppBodies[i] = nullptr;
+					}
 				}
 			}
 		}
 
+		// If we lose the player, wait
 		if (player1_id == 0) {
-			std::cout << "No player tracked, waiting..." << std::endl;
-			Sleep(33);
+			std::cout << "No player tracked, waiting...\r";
+
+			// --- FIX 2: RESET VGB TRACKING ID ---
+			// If we lost the player, explicitly tell VGB to stop tracking
+			if (last_tracking_id != 0) {
+				gestureSource->put_TrackingId(0);
+				last_tracking_id = 0;
+			}
+
+			Sleep(5);
 			continue;
 		}
 
-		// Update gesture source with current tracking ID
-		gestureSource->put_TrackingId(player1_id);
+		// 2. Manage Gesture ID updates
+		if (player1_id != last_tracking_id) {
+			hr = gestureSource->put_TrackingId(player1_id);
+			if (SUCCEEDED(hr)) {
+				last_tracking_id = player1_id;
+				std::cout << "\nTracking ID updated to " << player1_id << std::endl;
+			}
+			// --- FIX 3: REMOVE CONTINUE ---
+			// Removing 'continue;' here ensures we immediately flow into checking the gesture frame
+		}
 
+		// 3. INDEPENDENTLY poll for Gesture Frames
 		IVisualGestureBuilderFrame* pGestureFrame = nullptr;
 		hr = gestureReader->CalculateAndAcquireLatestFrame(&pGestureFrame);
-		if (hr == E_PENDING || !pGestureFrame) {
-			Sleep(33);
-			continue;
-		}
 
-		CheckError(hr, "IVisualGestureBuilderFrameReader::CalculateAndAcquireLatestFrame");
+		if (SUCCEEDED(hr) && pGestureFrame) {
+			// --- FIX 4: INITIALIZE YOUR BOOLEANS ---
+			// C++ leaves this as garbage memory if the function fails. Always initialize to false.
+			BOOLEAN isTrackingIdValid = false;
+			pGestureFrame->get_IsTrackingIdValid(&isTrackingIdValid);
 
-		BOOLEAN isTrackingIdValid = false;
-		pGestureFrame->get_IsTrackingIdValid(&isTrackingIdValid);
-		std::cout << "Player (ID=" << player1_id << ") isTrackingIdValid=" << isTrackingIdValid << std::endl;
+			if (isTrackingIdValid) {
+				BOOLEAN gesturing = false;
 
-		if (!isTrackingIdValid) {
-			pGestureFrame->Release();
-			continue;
-		}
+				for (UINT j = 0; j < gestureCount; ++j) {
+					if (gesturing) break;
 
-		BOOLEAN gesturing = false;
+					GestureType gestureType;
+					pGestures[j]->get_GestureType(&gestureType);
 
-		for (UINT j = 0; j < gestureCount; ++j) {
-			std::cout << "help" << std::endl;
-			std::cout << "Checking gesture " << j << " for player " << player1_id << std::endl;
+					if (gestureType == GestureType_Discrete) {
+						IDiscreteGestureResult* pGestureResult = nullptr;
+						hr = pGestureFrame->get_DiscreteGestureResult(pGestures[j], &pGestureResult);
 
-			if (gesturing) break; // already detected one this frame, skip the rest
+						if (SUCCEEDED(hr) && pGestureResult != nullptr) {
+							BOOLEAN isDetected = false;
+							float confidence = 0.0f;
+							pGestureResult->get_Detected(&isDetected);
+							pGestureResult->get_Confidence(&confidence);
 
-			GestureType gestureType;
-			pGestures[j]->get_GestureType(&gestureType);
+							if (isDetected && confidence > 0.5f) {
+								// 1. Safely allocate the wide character buffer
+								wchar_t gestureNameW[260] = { 0 };
 
-			wchar_t gestureName[256];
-			pGestures[j]->get_Name(256, gestureName);
-			std::wprintf(L"Gesture: %s, Type: %s\n", gestureName,
-				gestureType == GestureType_Discrete ? L"Discrete" : L"Continuous");
+								// 2. Fetch the name and capture the HRESULT to ensure it actually succeeds
+								HRESULT nameHr = pGestures[j]->get_Name(260, gestureNameW);
 
-			IDiscreteGestureResult* pGestureResult = nullptr;
-			hr = pGestureFrame->get_DiscreteGestureResult(pGestures[j], &pGestureResult);
-			CheckError(hr, "IVisualGestureBuilderFrame::get_DiscreteGestureResult");
+								if (SUCCEEDED(nameHr)) {
+									// 3. Convert the wide string to a standard narrow string
+									std::wstring ws(gestureNameW);
+									std::string gestureNameStr(ws.begin(), ws.end());
 
-			if (pGestureResult) {
-				BOOLEAN isDetected = false;
-				float confidence = 0.0f;
+									// 4. Print using the exact same std::cout you use everywhere else
+									std::cout << "\nDetected gesture: " << gestureNameStr << " (Confidence: " << confidence << ")\n";
 
-				pGestureResult->get_Detected(&isDetected);
-				pGestureResult->get_Confidence(&confidence);
-
-				std::wprintf(L"Gesture: %s\n Player: %llu\n Confidence: %f\n\n",
-					gestureName, player1_id, confidence);
-
-				if (isDetected && confidence > 0.01f) {
-					std::wprintf(L"Detected gesture: %s (confidence: %.2f) from player %llu\n",
-						gestureName, confidence, player1_id);
-					gesturing = true;
+									gesturing = true;
+								}
+								else {
+									// If get_Name is failing internally, this will catch it and print the error code
+									std::cout << "\n[Error] Failed to get gesture name. HRESULT: " << std::hex << nameHr << std::dec << "\n";
+								}
+							}
+							pGestureResult->Release();
+						}
+					}
 				}
 
-				pGestureResult->Release();
+				if (!gesturing) {
+					std::cout << "Player idle: " << player1_id << "          \r";
+				}
 			}
+			pGestureFrame->Release();
 		}
 
-		if (!gesturing) {
-			std::cout << "Player idle: " << player1_id << std::endl;
-		}
-
-		pGestureFrame->Release();
-		Sleep(33);
+		// Prevent CPU pegging while maintaining a fast polling rate
+		Sleep(5);
 	}
 }
+
+
 
 
 int main() {
