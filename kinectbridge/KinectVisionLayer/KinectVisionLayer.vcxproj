@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NewSensor.cpp" />
     <ClCompile Include="testdata.cpp" />
     <ClCompile Include="sensor.cpp" />
     <ClCompile Include="ipc.cpp" />
@@ -140,9 +141,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data.h" />
+    <ClInclude Include="NewSensor.h" />
     <ClInclude Include="sensor.h" />
     <ClInclude Include="ipc.h" />
     <ClInclude Include="test.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\gestures.gbd">

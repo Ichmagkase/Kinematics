@@ -7,9 +7,6 @@
 #include "sensor.h"
 #include <windows.h>
 
-#pragma comment(lib, "Kinect20.lib")
-#pragma comment(lib, "Kinect20.VisualGestureBuilder.lib")
-
 #define MAX_PLAYERS 2
 
 std::string GetHRESULTErrorMessage(HRESULT hr)
@@ -37,9 +34,7 @@ void CheckError(HRESULT hr, std::string message) {
 	}
 }
 
-Sensor::Sensor() : pBodyFrameReader(nullptr), pBodyFrameSource(nullptr), pSensor(nullptr), 
-	pGestureFrameSource(nullptr), pGestureFrameReader(nullptr), pGestureDatabase(nullptr),
-	pGestures(nullptr), gestureCount(0) {
+Sensor::Sensor() {
 	std::cout << "Kinect Person Detection Program" << std::endl;
 
 	HRESULT hr;

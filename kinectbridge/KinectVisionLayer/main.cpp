@@ -25,6 +25,7 @@ std::string GetHRESULTErrorMessage(HRESULT hr);
 void CheckError(HRESULT hr, std::string message);
 
 void debugGestures() {
+	// REFACTOR: dont do this. its not 1989
 	IBodyFrameReader* pBodyFrameReader = nullptr;
 	IBodyFrameSource* pBodyFrameSource = nullptr;
 	IKinectSensor* pSensor = nullptr;
@@ -98,8 +99,12 @@ void debugGestures() {
 	std::cout << "Entering main loop" << std::endl;
 
 	// Main gesture detection loop
+
+	// REFACTOR: In general make this entire thing less deep by inverting conditions and handling errors better
 	while (true) {
 		// 1. INDEPENDENTLY poll for Body Frames to keep Tracking ID updated
+
+		// ------------- REFACTOR: Could be wrapped in a function ----------------
 		IBodyFrame* pBodyFrame = nullptr;
 		hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
 
@@ -119,7 +124,8 @@ void debugGestures() {
 						}
 					}
 				}
-
+				
+				// REFACTOR: This is part really necessary if GetAndRefreshBodyData handles this? This should be run only once on shutdown
 				for (int i = 0; i < BODY_COUNT; ++i) {
 					if (ppBodies[i]) {
 						ppBodies[i]->Release();
@@ -128,7 +134,9 @@ void debugGestures() {
 				}
 			}
 		}
-
+		// --------------------------------------------------------------
+		
+		// In concept, this segment checks if the previous segment (^^^^) has run correctly 
 		// If we lose the player, wait
 		if (player1_id == 0) {
 			std::cout << "No player tracked, waiting...\r";
@@ -143,7 +151,7 @@ void debugGestures() {
 			Sleep(5);
 			continue;
 		}
-
+		
 		// 2. Manage Gesture ID updates
 		if (player1_id != last_tracking_id) {
 			hr = gestureSource->put_TrackingId(player1_id);
@@ -171,9 +179,11 @@ void debugGestures() {
 				for (UINT j = 0; j < gestureCount; ++j) {
 					if (gesturing) break;
 
+					// REFACTOR: This is unnecessary
 					GestureType gestureType;
 					pGestures[j]->get_GestureType(&gestureType);
 
+					// REFACTOR: this condition is unnecessary. All gestures being used are discrete.
 					if (gestureType == GestureType_Discrete) {
 						IDiscreteGestureResult* pGestureResult = nullptr;
 						hr = pGestureFrame->get_DiscreteGestureResult(pGestures[j], &pGestureResult);
@@ -183,12 +193,13 @@ void debugGestures() {
 							float confidence = 0.0f;
 							pGestureResult->get_Detected(&isDetected);
 							pGestureResult->get_Confidence(&confidence);
-
+							
 							if (isDetected && confidence > 0.5f) {
 								// 1. Safely allocate the wide character buffer
 								wchar_t gestureNameW[260] = { 0 };
 
 								// 2. Fetch the name and capture the HRESULT to ensure it actually succeeds
+								// REFACTOR: this call explicitly uses 260. use a variable or get the size of gestureNameW
 								HRESULT nameHr = pGestures[j]->get_Name(260, gestureNameW);
 
 								if (SUCCEEDED(nameHr)) {
