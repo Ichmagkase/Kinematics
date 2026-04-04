@@ -94,10 +94,25 @@ void Sensor::updatePlayerBodies() {
 	} 
 
 	// at this point we have 2 players tracked. 
-	// check relative positions to determine either player 1 or 2
 
-	players.player1_GestureSource->put_TrackingId(players.player1_id = 0);
-	players.player2_GestureSource->put_TrackingId(players.player2_id = 0);
+if (players.player1_id == 0 && players.player2_id == 0) {
+  Sensor::awaitPlayers();
+} else {
+  if (players.player1_id == 0) {
+    if (tracked_nonplayers.size() > 0) {
+      players.player1_id = tracked_nonplayers.pop_off();
+    }
+    
+  }
+  if (players.player2_id == 0) {
+    if (tracked_nonplayers.size() > 0) {
+      players.player1_id = tracked_nonplayers.pop_off();
+    }
+  }
+}
+
+	players.player1_GestureSource->put_TrackingId(players.player1_id);
+	players.player2_GestureSource->put_TrackingId(players.player2_id);
 }
 
 void Sensor::updatePlayerGestures() {
