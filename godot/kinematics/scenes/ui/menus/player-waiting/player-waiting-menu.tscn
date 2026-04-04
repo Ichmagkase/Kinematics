@@ -1,0 +1,124 @@
+[gd_scene format=3 uid="uid://bcctqaj0h3hnv"]
+
+[ext_resource type="Texture2D" uid="uid://bcyuspi4sc2af" path="res://art/maps/main/bg/frame_00_delay-0.04s.png" id="1_w001f"]
+[ext_resource type="Texture2D" uid="uid://cstkkbkmcgvfp" path="res://art/maps/main/bg/frame_01_delay-0.04s.png" id="2_j4d6v"]
+[ext_resource type="Texture2D" uid="uid://bfgacujb8fed8" path="res://art/maps/main/bg/frame_02_delay-0.04s.png" id="3_gs4du"]
+[ext_resource type="Texture2D" uid="uid://b38mls21s5vuf" path="res://art/maps/main/bg/frame_03_delay-0.04s.png" id="4_6gdax"]
+[ext_resource type="Texture2D" uid="uid://da52waapfod4p" path="res://art/maps/main/bg/frame_04_delay-0.04s.png" id="5_pelrv"]
+[ext_resource type="Texture2D" uid="uid://ba3g187wo6g36" path="res://art/maps/main/bg/frame_05_delay-0.04s.png" id="6_s5rwh"]
+[ext_resource type="Texture2D" uid="uid://c6ualmi57d5tt" path="res://art/maps/main/bg/frame_06_delay-0.04s.png" id="7_uxgsv"]
+[ext_resource type="Texture2D" uid="uid://c65lijwkslhnc" path="res://art/maps/main/bg/frame_07_delay-0.04s.png" id="8_ryb0t"]
+[ext_resource type="Texture2D" uid="uid://den0hgxe0mgm8" path="res://art/maps/main/bg/frame_08_delay-0.04s.png" id="9_avh2h"]
+[ext_resource type="Texture2D" uid="uid://brmjotig0l3ht" path="res://art/maps/main/bg/frame_09_delay-0.04s.png" id="10_tqnaq"]
+[ext_resource type="Texture2D" uid="uid://c6v4fef5dlhgn" path="res://art/maps/main/bg/frame_10_delay-0.04s.png" id="11_rti2b"]
+[ext_resource type="Texture2D" uid="uid://cw60l5k7m38ot" path="res://art/maps/main/bg/frame_11_delay-0.04s.png" id="12_2kbis"]
+[ext_resource type="Texture2D" uid="uid://c188etbphwopa" path="res://art/maps/main/bg/frame_12_delay-0.04s.png" id="13_ytatf"]
+[ext_resource type="Texture2D" uid="uid://c8opc7hooi36p" path="res://art/maps/main/bg/frame_13_delay-0.04s.png" id="14_d5dlu"]
+[ext_resource type="Texture2D" uid="uid://bxqkdqox7jdrv" path="res://art/maps/main/bg/frame_14_delay-0.04s.png" id="15_k85iy"]
+[ext_resource type="Texture2D" uid="uid://bvv1wfxj08e6e" path="res://art/maps/main/bg/frame_15_delay-0.04s.png" id="16_07xta"]
+[ext_resource type="Texture2D" uid="uid://bof88vi50opnj" path="res://art/maps/main/bg/frame_16_delay-0.04s.png" id="17_fstw8"]
+[ext_resource type="Texture2D" uid="uid://tkjwpuh20ctg" path="res://art/maps/main/bg/frame_17_delay-0.04s.png" id="18_2yvai"]
+[ext_resource type="Texture2D" uid="uid://lq2ysincmb8v" path="res://art/maps/main/bg/frame_18_delay-0.04s.png" id="19_sogmw"]
+[ext_resource type="Texture2D" uid="uid://cl4rdy6wijk7q" path="res://art/maps/main/bg/frame_19_delay-0.04s.png" id="20_sh5dm"]
+[ext_resource type="Texture2D" uid="uid://dt617j0iulydb" path="res://art/maps/main/bg/frame_20_delay-0.04s.png" id="21_fn00s"]
+[ext_resource type="Texture2D" uid="uid://d25aq23ivo5k3" path="res://art/maps/main/bg/frame_21_delay-0.04s.png" id="22_1vr25"]
+[ext_resource type="Texture2D" uid="uid://mk3aiq5wmruo" path="res://art/maps/main/bg/frame_22_delay-0.04s.png" id="23_d4ouj"]
+[ext_resource type="PackedScene" uid="uid://d3oeurua8kxly" path="res://scenes/ui/menus/player-waiting/waiting-until-tracked.tscn" id="24_h38uw"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0ekea"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_w001f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_j4d6v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_gs4du")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_6gdax")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_pelrv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_s5rwh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_uxgsv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ryb0t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_avh2h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_tqnaq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_rti2b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_2kbis")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_ytatf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_d5dlu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_k85iy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_07xta")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_fstw8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_2yvai")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_sogmw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_sh5dm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_fn00s")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_1vr25")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_d4ouj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 30.0
+}]
+
+[node name="PlayerWaitingMenu" type="Control" unique_id=966465286]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Parallax2D" type="Parallax2D" parent="." unique_id=324063820]
+scroll_offset = Vector2(-50, -2)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Parallax2D" unique_id=1129610549]
+modulate = Color(0.5372549, 0.5372549, 0.5372549, 1)
+position = Vector2(1008, 556)
+scale = Vector2(4.907, 4.959)
+sprite_frames = SubResource("SpriteFrames_0ekea")
+autoplay = "default"
+
+[node name="WaitingUntilTracked" parent="." unique_id=527496795 instance=ExtResource("24_h38uw")]
+layout_mode = 1
