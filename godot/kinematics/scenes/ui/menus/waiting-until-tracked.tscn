@@ -1,11 +1,19 @@
 [gd_scene format=3 uid="uid://d3oeurua8kxly"]
 
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_b54s7"]
+[ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_r73yv"]
+[ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_j03i8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b54s7"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r73yv"]
+bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jtxyy"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37f5x"]
 bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
 
 [node name="WaitingUntilTracked" type="Control" unique_id=527496795]
@@ -34,10 +42,20 @@ offset_top = 500.0
 offset_right = 1046.0
 offset_bottom = 595.0
 
-[node name="Button" type="Button" parent="VBoxContainer" unique_id=437085256]
+[node name="HomeButton" type="Button" parent="VBoxContainer" unique_id=437085256]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_b54s7")
 theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_b54s7")
 theme_override_styles/hover = SubResource("StyleBoxFlat_r73yv")
 text = "Home"
+script = ExtResource("2_r73yv")
+
+[node name="SkipButton" type="Button" parent="VBoxContainer" unique_id=2020022159]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_b54s7")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_jtxyy")
+theme_override_styles/hover = SubResource("StyleBoxFlat_37f5x")
+text = "Skip"
+script = ExtResource("3_j03i8")
