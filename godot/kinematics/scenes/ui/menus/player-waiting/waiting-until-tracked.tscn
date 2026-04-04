@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d3oeurua8kxly"]
 
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_b54s7"]
+[ext_resource type="Script" uid="uid://cdh4u2w68gyhx" path="res://scenes/ui/menus/player-waiting/scripts/TrackerWaiter.cs" id="1_tno80"]
 [ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_r73yv"]
 [ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_j03i8"]
 
@@ -23,6 +24,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_tno80")
 
 [node name="Label" type="Label" parent="." unique_id=2066575422]
 layout_mode = 0
