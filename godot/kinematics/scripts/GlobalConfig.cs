@@ -48,7 +48,7 @@ namespace Game
 		private const int DefaultPlayerCount = 2;
 
 		private ConfigFile _globalConfigFile;
-		private bool _persistConfig = false;
+		private bool _canPersistConfig = false;
 
 		private Error CreateDirectoryToPathIfNotExists(string path)
 		{
@@ -104,12 +104,12 @@ namespace Game
 					{
 						GD.PrintErr($"Failed to create persistant config file: {PersistantConfigPath}: {saveErr}");
 					}
-					_persistConfig = true;
+					_canPersistConfig = true;
 				}
 			}
 			else
 			{
-				_persistConfig = true;
+				_canPersistConfig = true;
 			}
 
 			GameScenePath = (string)_globalConfigFile.GetValue(SectionDefault, KeyGameScene, DefaultGameScene);
@@ -150,9 +150,9 @@ namespace Game
 			};
 		}
 
-		private void SaveConfigFile()
+		private void SaveIfCanPersist()
 		{
-			if (_persistConfig)
+			if (_canPersistConfig)
 			{
 				Error err = _globalConfigFile.Save(PersistantConfigPath);
 				if (err != Error.Ok)
@@ -166,7 +166,7 @@ namespace Game
 		{
 			GameAudioPath = themePath;
 			_globalConfigFile.SetValue(SectionDefault, KeyCurrentThemePath, themePath);
-			SaveConfigFile();
+			SaveIfCanPersist();
 		}
 	}
 }
