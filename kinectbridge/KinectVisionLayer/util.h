@@ -23,10 +23,10 @@ std::string GetHRESULTErrorMessage(HRESULT hr)
 	return message;
 }
 
-#define ERROR_CHECK( ret )                                        \
-    if( FAILED( ret ) ){                                          \
-        std::stringstream ss;                                     \
-        ss << "failed " #ret " " << std::hex << ret << std::endl; \
+#define ERROR_CHECK( ret )																	\
+    if( FAILED( ret ) ){																	\
+        std::stringstream ss;																\
+        ss << "failed " #ret " " << std::hex << ret << std::endl;							\
         std::cerr << "Error: " << GetHRESULTErrorMessage( ret ) << std::endl;               \
-        throw std::runtime_error( ss.str().c_str() );             \
+        throw std::runtime_error( ss.str().c_str() );										\
     }

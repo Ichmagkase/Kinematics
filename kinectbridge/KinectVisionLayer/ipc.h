@@ -2,12 +2,12 @@
 #include <string>
 #include <winsock2.h>
 #include <WS2tcpip.h>
-#include "data.h"
+#include "structures.h"
 
 class IPC {
 public:
 	IPC();
-	int sendEventPayload(struct Data e);
+	int sendEventPayload(struct GestureData e);
 	~IPC();
 
 private:

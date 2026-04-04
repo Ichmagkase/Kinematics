@@ -87,7 +87,7 @@ Sensor::Sensor() {
  * Also handle relative position of players here
  */
 std::array<UINT64, 2> Sensor::awaitPlayersReady() {
-
+	
 	HRESULT hr;
 	IBody* ppBodies[BODY_COUNT] = { nullptr };
 	int detectedCount = 0;

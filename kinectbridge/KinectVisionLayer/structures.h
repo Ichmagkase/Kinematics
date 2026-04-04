@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 enum Event {
 	JUMP,
@@ -8,7 +9,7 @@ enum Event {
 	BLOCK
 };
 
-struct Data {
+struct GestureData {
 	Event event;
 	std::string player;
 };

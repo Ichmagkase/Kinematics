@@ -1,7 +1,7 @@
-#include "NewSensor.h"
+#include "sensor.h"
 #include "util.h"
 #include <vector>
-
+#define GESTURE_NAME_SIZE 260
 // ----- INIT -----
 
 void Sensor::initialize() 
@@ -58,10 +58,18 @@ void Sensor::update()
 
 void Sensor::updatePlayerBodies() {
 	IBodyFrame* pBodyFrame = nullptr;
-	ERROR_CHECK(pBodyFrameReader->AcquireLatestFrame(&pBodyFrame));
+	HRESULT hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+	if (hr == E_PENDING) {
+		Sleep(30);
+		updatePlayerBodies();
+	}
+	else if (FAILED(hr)) {
+		ERROR_CHECK(hr);
+	}
 
 	if (!pBodyFrame) {
-		// Handle null body frame
+		std::cout << "No body frame available" << std::endl;
+		updatePlayerBodies();
 	}
 
 	ERROR_CHECK(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies));
@@ -95,32 +103,147 @@ void Sensor::updatePlayerBodies() {
 
 	// at this point we have 2 players tracked. 
 
-if (players.player1_id == 0 && players.player2_id == 0) {
-  Sensor::awaitPlayers();
-} else {
-  if (players.player1_id == 0) {
-    if (tracked_nonplayers.size() > 0) {
-      players.player1_id = tracked_nonplayers.pop_off();
-    }
-    
-  }
-  if (players.player2_id == 0) {
-    if (tracked_nonplayers.size() > 0) {
-      players.player1_id = tracked_nonplayers.pop_off();
-    }
-  }
-}
+	if (players.player1_id == 0 && players.player2_id == 0) {
+	  Sensor::awaitPlayersReady();
+	}
+	else {
+		if (players.player1_id == 0) {
+			if (tracked_nonplayers.size() > 0) {
+				players.player1_id = tracked_nonplayers.back();
+				tracked_nonplayers.pop_back();
+			}
+		}
+		if (players.player2_id == 0) {
+			if (tracked_nonplayers.size() > 0) {
+				players.player1_id = tracked_nonplayers.back();
+				tracked_nonplayers.pop_back();
+			}
+		}
+	}
 
 	players.player1_GestureSource->put_TrackingId(players.player1_id);
 	players.player2_GestureSource->put_TrackingId(players.player2_id);
 }
 
 void Sensor::updatePlayerGestures() {
+	IVisualGestureBuilderFrameReader* activePlayers[2] = {players.player1_GestureReader, players.player2_GestureReader};
+	for (int i = 0; i < 2; ++i) {
+		IVisualGestureBuilderFrame* pGestureFrame = nullptr;
+		activePlayers[i]->CalculateAndAcquireLatestFrame(&pGestureFrame);
+		
+		if (pGestureFrame) {
+			BOOLEAN isPlayer1TrackingIdValid = false;
+			pGestureFrame->get_IsTrackingIdValid(&isPlayer1TrackingIdValid);
+			if (!isPlayer1TrackingIdValid) {
+				pGestureFrame->Release();
+				pGestureFrame = nullptr;
+				continue;
+			}
 
+			bool gesturing = false;
+			for (UINT j = 0; j < gestureCount; ++j) {
+				if (gesturing) break;
+
+				IDiscreteGestureResult* pGestureResult = nullptr;
+				pGestureFrame->get_DiscreteGestureResult(pGestures[j], &pGestureResult);
+
+				if (pGestureResult == nullptr) {
+					std::cerr << "pGestureResult is null for player " << i << " gesture " << j << std::endl;
+					continue;
+				}
+
+				BOOLEAN isDetected = false;
+				float confidence = 0.0f;
+				pGestureResult->get_Detected(&isDetected);
+				pGestureResult->get_Confidence(&confidence);
+
+				if (isDetected && confidence > 0.5f) {
+					// 1. Safely allocate the wide character buffer
+					wchar_t gestureNameW[GESTURE_NAME_SIZE] = { 0 };
+
+					// 2. Fetch the name and capture the HRESULT to ensure it actually succeeds
+					// REFACTOR: this call explicitly uses 260. use a variable or get the size of gestureNameW
+					ERROR_CHECK( pGestures[j]->get_Name(GESTURE_NAME_SIZE, gestureNameW));
+
+					// 3. Convert the wide string to a standard narrow string
+					std::wstring ws(gestureNameW);
+					std::string gestureNameStr(ws.begin(), ws.end());
+
+					// 4. Print using the exact same std::cout you use everywhere else
+					std::cout << "\nDetected gesture: " << gestureNameStr << " (Confidence: " << confidence << ")\n";
+
+					gesturing = true;
+				}
+				pGestureResult->Release();
+			}
+
+			if (!gesturing) {
+				std::cout << "Player idle:  " << std::endl;
+			}
+
+			pGestureFrame->Release();
+		}
+		
+	}
 }
 
-void Sensor::awaitPlayers(Players *players) {
-	
+void Sensor::awaitPlayersReady() {
+	int detectedCount = 0;
+	IBody* player1 = nullptr;
+	IBody* player2 = nullptr;
+	IBodyFrame* pBodyFrame = nullptr;
+	while (detectedCount < 2) {
+		HRESULT hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
+		if (hr == E_PENDING) {
+			Sleep(30);
+			continue;
+		} else if (FAILED(hr)) {
+			ERROR_CHECK(hr);
+		}
+		ERROR_CHECK(pBodyFrame->GetAndRefreshBodyData(BODY_COUNT, ppBodies));
+		detectedCount = 0;
+		player1 = nullptr; 
+		player2 = nullptr;
+		for (int i = 0; i < BODY_COUNT; ++i) {
+			BOOLEAN bTracked;
+			if (ppBodies[i]) {
+				ERROR_CHECK(ppBodies[i]->get_IsTracked(&bTracked));
+				if (bTracked) {
+
+					if (player1 == nullptr) {
+						player1 = ppBodies[i];
+					} else if (player2 == nullptr) {
+						player2 = ppBodies[i];
+					}
+					detectedCount++;
+				}
+			}
+		}
+		pBodyFrame->Release();
+	}
+
+	// now sort the 2 players by position from left to right
+	Joint player1_joints[JointType_Count] = {};
+	if (FAILED(player1->GetJoints(JointType_Count, player1_joints))) {
+		std::cerr << "Failed to get joints for player 1" << std::endl;
+	}
+	float player1_head_x = player1_joints[JointType_Head].Position.X;
+
+	Joint player2_joints[JointType_Count] = {};
+	if (FAILED(player2->GetJoints(JointType_Count, player2_joints))) {
+		std::cerr << "Failed to get joints for player 2" << std::endl;
+	}
+	float player2_head_x = player2_joints[JointType_Head].Position.X;
+
+	// Sort left most player (rightmost from camera perspective) to be first
+	if (player1_head_x < player2_head_x) {
+		player1->get_TrackingId(&players.player1_id); 
+		player2->get_TrackingId(&players.player2_id);
+	}
+	else {
+		player1->get_TrackingId(&players.player2_id); 
+		player2->get_TrackingId(&players.player1_id);
+	}
 }
 
 // ----- RUN -----
@@ -132,16 +255,30 @@ Sensor::Sensor()
 
 Sensor::~Sensor()
 {
-	// TODO
+	// Release all resources
+	for (int i = 0; i < BODY_COUNT; ++i) {
+		if (ppBodies[i]) {
+			ppBodies[i]->Release();
+			ppBodies[i] = nullptr;
+		}
+	}
+
+	players.player1_GestureReader->Release();
+	players.player2_GestureReader->Release();
+	players.player1_GestureSource->Release();
+	players.player2_GestureSource->Release();
+	pBodyFrameSource->Release();
+	pBodyFrameReader->Release();
+	pGestureDatabase->Release();
+	kinect->Close();
 }
 
 void Sensor::listen()
 {
-	awaitPlayers(&players);
+	Sensor::awaitPlayersReady();
 
 	while (true) {
 		update();
-		
-		// Implement exit logic here later
+		Sleep(30);
 	}
 }

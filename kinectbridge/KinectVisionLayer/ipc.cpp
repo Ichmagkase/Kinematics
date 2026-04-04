@@ -36,7 +36,7 @@ IPC::IPC() {
 }
 
 // Method implementation
-int IPC::sendEventPayload(struct Data e) {
+int IPC::sendEventPayload(struct GestureData e) {
 	std::string packet = e.player + "|" + actions[e.event] + "\n";
 	std::cout << "Sending packet: " << packet << std::endl;
 	int sendResult = sendto(ipc_socket, packet.c_str(), packet.size(), 0, (sockaddr*)&endpoint, sizeof(endpoint));
