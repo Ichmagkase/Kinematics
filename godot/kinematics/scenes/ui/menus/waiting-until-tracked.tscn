@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://d3oeurua8kxly"]
+
+[ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_b54s7"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b54s7"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r73yv"]
+bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
+
+[node name="WaitingUntilTracked" type="Control" unique_id=527496795]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="." unique_id=2066575422]
+layout_mode = 0
+offset_left = 462.0
+offset_top = 190.0
+offset_right = 1458.0
+offset_bottom = 320.0
+theme_override_fonts/font = ExtResource("1_b54s7")
+theme_override_font_sizes/font_size = 120
+text = "Waiting For Two Players"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1779398972]
+layout_mode = 0
+offset_left = 888.0
+offset_top = 500.0
+offset_right = 1046.0
+offset_bottom = 595.0
+
+[node name="Button" type="Button" parent="VBoxContainer" unique_id=437085256]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_b54s7")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_b54s7")
+theme_override_styles/hover = SubResource("StyleBoxFlat_r73yv")
+text = "Home"
