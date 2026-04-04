@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://dggljfxmvhp0n"]
+
+[ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_h0gt5"]
+[ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_pdb5k"]
+[ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_lnghf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_204qv"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hxpkq"]
+bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ekps"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2beac"]
+bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
+
+[node name="WaitingPlayerReady" type="Control" unique_id=411095951]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="." unique_id=442137438]
+layout_mode = 0
+offset_left = 590.0
+offset_top = 190.0
+offset_right = 1330.0
+offset_bottom = 320.0
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 120
+text = "Block to Ready Up"
+
+[node name="ControlsVBoxContainer" type="VBoxContainer" parent="." unique_id=2116743459]
+layout_mode = 0
+offset_left = 782.5
+offset_top = 750.0
+offset_right = 1137.5
+offset_bottom = 928.0
+
+[node name="HomeButton" type="Button" parent="ControlsVBoxContainer" unique_id=501811013]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_204qv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hxpkq")
+text = "Home"
+script = ExtResource("2_pdb5k")
+
+[node name="SkipToGameButton" type="Button" parent="ControlsVBoxContainer" unique_id=1903338001]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_6ekps")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2beac")
+text = "Skip to Game"
+script = ExtResource("3_lnghf")
+
+[node name="Player1VBoxContainer" type="VBoxContainer" parent="." unique_id=1658952719]
+layout_mode = 0
+offset_left = 498.5
+offset_top = 450.0
+offset_right = 781.5
+offset_bottom = 628.0
+
+[node name="Player1Label" type="Label" parent="Player1VBoxContainer" unique_id=1484156957]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+text = "Player 1"
+horizontal_alignment = 1
+
+[node name="ReadyLabel" type="Label" parent="Player1VBoxContainer" unique_id=1762079714]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+text = "Not Ready"
+horizontal_alignment = 1
+
+[node name="Player2VBoxContainer" type="VBoxContainer" parent="." unique_id=782357744]
+layout_mode = 0
+offset_left = 1138.5
+offset_top = 450.0
+offset_right = 1421.5
+offset_bottom = 628.0
+
+[node name="Player2Label" type="Label" parent="Player2VBoxContainer" unique_id=628323402]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+text = "Player 2"
+horizontal_alignment = 1
+
+[node name="ReadyLabel" type="Label" parent="Player2VBoxContainer" unique_id=1554696098]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_h0gt5")
+theme_override_font_sizes/font_size = 80
+text = "Not Ready"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="ControlsVBoxContainer/HomeButton" to="ControlsVBoxContainer/HomeButton" method="_OnPressed"]
+[connection signal="pressed" from="ControlsVBoxContainer/SkipToGameButton" to="ControlsVBoxContainer/SkipToGameButton" method="_OnPressed"]
