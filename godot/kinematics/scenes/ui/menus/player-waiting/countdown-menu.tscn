@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bf2fojgpppgrs"]
 
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_swtbs"]
+[ext_resource type="Script" uid="uid://dxrwlx31wmqfs" path="res://scenes/ui/menus/player-waiting/scripts/Countdown.cs" id="1_xkqcb"]
 
 [node name="CountdownMenu" type="Control" unique_id=401224746]
 layout_mode = 3
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_xkqcb")
 
 [node name="Timer" type="Timer" parent="." unique_id=1751735695]
 
