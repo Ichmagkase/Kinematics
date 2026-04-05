@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dggljfxmvhp0n"]
 
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_h0gt5"]
+[ext_resource type="Script" uid="uid://csg383ysocudr" path="res://scenes/ui/menus/player-waiting/scripts/PlayerReadyWaiter.cs" id="1_pdb5k"]
 [ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_pdb5k"]
 [ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_lnghf"]
 
@@ -16,13 +17,16 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2beac"]
 bg_color = Color(0, 0.68235296, 0.70980394, 0.47843137)
 
-[node name="WaitingPlayerReady" type="Control" unique_id=411095951]
+[node name="WaitingPlayerReady" type="Control" unique_id=411095951 node_paths=PackedStringArray("PlayerOneReadyLabel", "PlayerTwoReadyLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_pdb5k")
+PlayerOneReadyLabel = NodePath("Player1VBoxContainer/Player1Label")
+PlayerTwoReadyLabel = NodePath("Player2VBoxContainer/Player2Label")
 
 [node name="Label" type="Label" parent="." unique_id=442137438]
 layout_mode = 0
