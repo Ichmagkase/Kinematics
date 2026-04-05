@@ -14,4 +14,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 
         s.sendto(message, (HOST, PORT))
 
-        print(f"Sent message: {message}")
+        print(f"Sent message: {message}\n")
