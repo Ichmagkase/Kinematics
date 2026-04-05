@@ -27,6 +27,7 @@
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="24_iq3br"]
 [ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="24_mec52"]
 [ext_resource type="Script" uid="uid://cugu2u3817yee" path="res://scenes/ui/menus/scripts/EndButton.cs" id="25_ck483"]
+[ext_resource type="PackedScene" uid="uid://bcctqaj0h3hnv" path="res://scenes/ui/menus/player-waiting/player-waiting-menu.tscn" id="27_6sme2"]
 [ext_resource type="Script" uid="uid://b6sk6tn2mbil" path="res://scenes/ui/menus/scripts/ToolTipLabel.cs" id="28_4fbje"]
 [ext_resource type="AudioStream" uid="uid://c2iamyb1yfsf5" path="res://music/themes/main-menu.wav" id="29_4fbje"]
 [ext_resource type="Script" uid="uid://dw8n74movdekb" path="res://scenes/audio/scripts/MainMenuAudioPlayer.cs" id="30_4fbje"]
@@ -254,6 +255,7 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_iq3br")
 theme_override_styles/hover = SubResource("StyleBoxFlat_6ffme")
 text = "Start Game"
 script = ExtResource("24_mec52")
+startScene = ExtResource("27_6sme2")
 
 [node name="EndButton" type="Button" parent="VBoxContainer" unique_id=805210212]
 layout_mode = 2

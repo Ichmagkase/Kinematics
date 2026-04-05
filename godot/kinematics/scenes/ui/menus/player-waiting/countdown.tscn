@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bf2fojgpppgrs"]
+
+[ext_resource type="Script" uid="uid://dxrwlx31wmqfs" path="res://scenes/ui/menus/player-waiting/scripts/Countdown.cs" id="1_wpjwj"]
+[ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="2_g24xu"]
+
+[node name="Countdown" type="Control" unique_id=401224746]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wpjwj")
+
+[node name="Timer" type="Timer" parent="." unique_id=1751735695]
+
+[node name="Title" type="Label" parent="." unique_id=2082851184]
+layout_mode = 0
+offset_left = 613.0
+offset_top = 190.0
+offset_right = 1307.0
+offset_bottom = 320.0
+theme_override_fonts/font = ExtResource("2_g24xu")
+theme_override_font_sizes/font_size = 120
+text = "Starting Game in"
+
+[node name="CountdownLabel" type="Label" parent="." unique_id=239764455]
+layout_mode = 0
+offset_left = 934.5
+offset_top = 540.0
+offset_right = 985.5
+offset_bottom = 670.0
+theme_override_fonts/font = ExtResource("2_g24xu")
+theme_override_font_sizes/font_size = 120
+text = "3"
