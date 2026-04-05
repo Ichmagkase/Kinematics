@@ -32,8 +32,6 @@ namespace Game.Server.Udp
 		// Called every frame. 'delta' is the elapsed time since the previous frame.
 		public override void _Process(double delta)
 		{
-			EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, "attack_2");
-
 			if (peer.GetAvailablePacketCount() > 0)
 			{
 				byte[] packetBytes = peer.GetPacket();
