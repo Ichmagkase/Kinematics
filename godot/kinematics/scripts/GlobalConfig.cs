@@ -18,6 +18,9 @@ namespace Game
 		public string GameAudioThemesPath;
 		public string GameAudioPath;
 		public string PlayerPath;
+		public string PlayerHudPath;
+		public string PlayerSoundEffectPath;
+		public string MainMenuThemePath;
 		public int PlayerCount;
 		public List<string> ToolTips;
 
@@ -25,27 +28,33 @@ namespace Game
 		private const string SectionDefault = "default";
 
 		// Config keys
-		private const string KeyGameScene = "game_scene";
-		private const string KeyPauseScene = "pause_scene";
-		private const string KeyPauseAction = "pause_action";
-		private const string KeyHomeScene = "home_scene";
-		private const string KeyFont = "font";
-		private const string KeyAudioThemes = "audio_themes";
-		private const string KeyCurrentThemePath = "current_theme_path";
-		private const string KeyTooltips = "tooltips";
-		private const string KeyPlayerCount = "player_count";
-		private const string KeyPlayerPath = "player_scene";
+		private const string KeyGameScene          = "game_scene";
+		private const string KeyPauseScene         = "pause_scene";
+		private const string KeyPauseAction        = "pause_action";
+		private const string KeyHomeScene          = "home_scene";
+		private const string KeyFont               = "font";
+		private const string KeyAudioThemes        = "audio_themes";
+		private const string KeyCurrentThemePath   = "current_theme_path";
+		private const string KeyTooltips           = "tooltips";
+		private const string KeyPlayerCount		   = "player_count";
+		private const string KeyPlayerPath		   = "player_scene";
+		private const string KeyPlayerHudPath 	   = "player_hud_scene";
+		private const string KeyPlayerSoundEffectPath = "player_sound_effects";
+		private const string KeyMainMenuThemePath = "main_menu_theme_path";
 
 		// Default values
-		private const string DefaultGameScene = "res://scenes/game-menu-layer.tscn";
-		private const string DefaultPauseScene = "res://scenes/ui/menus/pause-menu.tscn";
-		private const string DefaultPauseAction = "pause";
-		private const string DefaultHomeScene = "res://scenes/ui/menus/main-menu.tscn";
-		private const string DefaultFont = "res://fonts/Jersey10-Regular.ttf";
-		private const string DefaultAudioThemesPath = "res://music/themes";
-		private const string DefaultAudioPath = "res://music/themes/battle-theme-main.wav";
-		private const string DefaultPlayerPath = "res://scenes/player/player.tscn";
-		private const int DefaultPlayerCount = 2;
+		private const string DefaultGameScene        = "res://scenes/game-menu-layer.tscn";
+		private const string DefaultPauseScene       = "res://scenes/ui/menus/pause-menu.tscn";
+		private const string DefaultPauseAction      = "pause";
+		private const string DefaultHomeScene        = "res://scenes/ui/menus/main-menu.tscn";
+		private const string DefaultFont             = "res://fonts/Jersey10-Regular.ttf";
+		private const string DefaultAudioThemesPath  = "res://music/themes";
+		private const string DefaultAudioPath        = "res://music/themes/battle-theme-main.wav";
+		private const string DefaultPlayerPath	 	 = "res://scenes/player/player.tscn";
+		private const string DefaultPlayerHudPath	 = "res://scenes/ui/player/players-hud.tscn";
+		private const int DefaultPlayerCount 	 	 = 2;
+		private const string DefaultPlayerSoundEffectPath = "res://music/sound-effects/player";
+		private const string DefaultMainMenuThemePath = "res://music/themes/main-menu.wav";
 
 		private ConfigFile _globalConfigFile;
 		private bool _persistConfig = false;
@@ -112,15 +121,18 @@ namespace Game
 				_persistConfig = true;
 			}
 
-			GameScenePath = (string)_globalConfigFile.GetValue(SectionDefault, KeyGameScene, DefaultGameScene);
-			PauseScenePath = (string)_globalConfigFile.GetValue(SectionDefault, KeyPauseScene, DefaultPauseScene);
-			PauseActionName = (string)_globalConfigFile.GetValue(SectionDefault, KeyPauseAction, DefaultPauseAction);
-			HomeScenePath = (string)_globalConfigFile.GetValue(SectionDefault, KeyHomeScene, DefaultHomeScene);
-			FontPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyFont, DefaultFont);
-			GameAudioThemesPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyAudioThemes, DefaultAudioThemesPath);
-			GameAudioPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyCurrentThemePath, DefaultAudioPath);
-			PlayerPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerPath, DefaultPlayerPath);
-			PlayerCount = (int)_globalConfigFile.GetValue(SectionDefault, KeyPlayerCount, DefaultPlayerCount);
+			GameScenePath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyGameScene,        DefaultGameScene);
+			PauseScenePath      = (string)_globalConfigFile.GetValue(SectionDefault, KeyPauseScene,       DefaultPauseScene);
+			PauseActionName     = (string)_globalConfigFile.GetValue(SectionDefault, KeyPauseAction,      DefaultPauseAction);
+			HomeScenePath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyHomeScene,        DefaultHomeScene);
+			FontPath            = (string)_globalConfigFile.GetValue(SectionDefault, KeyFont,             DefaultFont);
+			GameAudioThemesPath = (string)_globalConfigFile.GetValue(SectionDefault, KeyAudioThemes,      DefaultAudioThemesPath);
+			GameAudioPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyCurrentThemePath, DefaultAudioPath);
+			PlayerPath          = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerPath,       DefaultPlayerPath);
+			PlayerHudPath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyPlayerHudPath,       DefaultPlayerHudPath);
+			PlayerCount		    = (int)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerCount, 	  DefaultPlayerCount);
+			PlayerSoundEffectPath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerSoundEffectPath, 	  DefaultPlayerSoundEffectPath);
+			MainMenuThemePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyMainMenuThemePath, 	  DefaultMainMenuThemePath);
 
 			ToolTips = new List<string>();
 			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());

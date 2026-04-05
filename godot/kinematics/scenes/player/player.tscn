@@ -7,11 +7,13 @@
 [ext_resource type="Texture2D" uid="uid://bovps0xfgc8ha" path="res://art/player/knight-2/DEFEND.png" id="5_fcs02"]
 [ext_resource type="Texture2D" uid="uid://b865keyoyxm2r" path="res://art/player/knight-2/DEATH.png" id="6_myrg7"]
 [ext_resource type="Texture2D" uid="uid://cirbcee4w5887" path="res://art/player/knight-2/IDLE.png" id="7_kvlxm"]
+[ext_resource type="Texture2D" uid="uid://jg6dyqinfdra" path="res://art/player/knight-2/HURT.png" id="7_ugbui"]
 [ext_resource type="Texture2D" uid="uid://ec8rpjqcevty" path="res://art/player/knight-2/JUMP.png" id="8_uf5tr"]
 [ext_resource type="Texture2D" uid="uid://vk3wnpu0yov0" path="res://art/player/knight-2/RUN.png" id="9_lgqa7"]
 [ext_resource type="Script" uid="uid://dfud5u5oq2ikq" path="res://scenes/player/PlayerSprite.cs" id="10_h17s1"]
 [ext_resource type="Script" uid="uid://bokvss4xwxenh" path="res://scenes/player/PlayerBoundBox.cs" id="11_je7p5"]
 [ext_resource type="Script" uid="uid://dyja5x5x314k4" path="res://scenes/player/PlayerConfig.cs" id="12_fm80t"]
+[ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="13_gx1jg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8ydkj"]
 atlas = ExtResource("2_fm80t")
@@ -148,6 +150,22 @@ region = Rect2(960, 0, 96, 63)
 [sub_resource type="AtlasTexture" id="AtlasTexture_0ncpa"]
 atlas = ExtResource("6_myrg7")
 region = Rect2(1056, 0, 96, 63)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgqa7"]
+atlas = ExtResource("7_ugbui")
+region = Rect2(0, 0, 96, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qxvo"]
+atlas = ExtResource("7_ugbui")
+region = Rect2(96, 0, 96, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5q8fn"]
+atlas = ExtResource("7_ugbui")
+region = Rect2(192, 0, 96, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wva7c"]
+atlas = ExtResource("7_ugbui")
+region = Rect2(288, 0, 96, 62)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_upxxc"]
 atlas = ExtResource("7_kvlxm")
@@ -343,6 +361,23 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_lgqa7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qxvo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5q8fn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wva7c")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_upxxc")
 }, {
 "duration": 1.0,
@@ -427,9 +462,13 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=339971032]
 scale = Vector2(5, 5)
 sprite_frames = SubResource("SpriteFrames_lvxji")
-animation = &"death"
-frame_progress = 0.87607056
+animation = &"hit"
+frame = 3
+frame_progress = 1.0
 script = ExtResource("10_h17s1")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1700513473]
+volume_db = 24.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2072585323]
 position = Vector2(-1, 72)
@@ -446,3 +485,22 @@ collision_mask = 2
 position = Vector2(0, 72)
 shape = SubResource("RectangleShape2D_fm80t")
 script = ExtResource("11_je7p5")
+
+[node name="PlayerNameContainer" type="MarginContainer" parent="." unique_id=285383284]
+offset_left = -39.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = -6.0
+size_flags_horizontal = 4
+theme_override_constants/margin_top = 0
+
+[node name="Background" type="Panel" parent="PlayerNameContainer" unique_id=1253610832]
+layout_mode = 2
+
+[node name="PlayerName" type="Label" parent="PlayerNameContainer" unique_id=1041243418]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_fonts/font = ExtResource("13_gx1jg")
+theme_override_font_sizes/font_size = 30
+text = "Player #"
+horizontal_alignment = 1

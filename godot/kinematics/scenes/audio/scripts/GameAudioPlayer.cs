@@ -10,11 +10,12 @@ namespace Game
 		private void _OnFinished()
 		{
 			Play();
-        }
+		}
 
 		public override void _Ready()
 		{
 			_config = GlobalConfig.Instance;
+			if (_config.GameAudioPath == "") return;
 			Stream = (AudioStream)GD.Load(_config.GameAudioPath);
 			Finished += _OnFinished;
 			Play();

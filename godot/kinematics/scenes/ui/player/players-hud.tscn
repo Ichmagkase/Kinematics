@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://dnu3g586cifer"]
+
+[ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_qo4si"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qo4si"]
+bg_color = Color(0.972549, 0, 0, 1)
+
+[node name="PlayerHUD" type="Control" unique_id=2127429936]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+
+[node name="HealthBarContainer" type="VBoxContainer" parent="." unique_id=1981024033]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = -51.0
+offset_right = 413.0
+offset_bottom = 131.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerName" type="Label" parent="HealthBarContainer" unique_id=648471193]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_qo4si")
+theme_override_font_sizes/font_size = 40
+text = "Test"
+
+[node name="ProgressBar" type="ProgressBar" parent="HealthBarContainer" unique_id=1132508045]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_fonts/font = ExtResource("1_qo4si")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/background = SubResource("StyleBoxFlat_qo4si")
+show_percentage = false
+
+[node name="HealthPercentageContainer" type="MarginContainer" parent="HealthBarContainer/ProgressBar" unique_id=2093354768]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 11
+
+[node name="HealthPercentage" type="Label" parent="HealthBarContainer/ProgressBar/HealthPercentageContainer" unique_id=1279642627]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_qo4si")
+theme_override_font_sizes/font_size = 40
+text = "0%"
