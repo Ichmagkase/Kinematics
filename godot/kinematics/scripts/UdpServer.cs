@@ -47,10 +47,11 @@ namespace Game.Server.Udp
 						SERVICE_NAME, $"Message not in correct format: {packetMsg}"
 					);
 				}
-				else if (playerAction[0] != "0" || playerAction[0] != "1" || !actions.Contains(playerAction[1]))
+				else if ((playerAction[0] != "1" && playerAction[0] != "2") || !actions.Contains(playerAction[1]))
 				{
 					Game.Utils.Logger.PrintErr(
-						SERVICE_NAME, $"Message contains malformed input: {packetMsg}"
+						SERVICE_NAME,
+						$"Message contains malformed input: {packetMsg}; Player: {playerAction[0]}, Action: {playerAction[1]}"
 					);
 				}
 
