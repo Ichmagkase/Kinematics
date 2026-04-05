@@ -56,14 +56,14 @@ namespace Game
 				fullPaths[i] = _config.GameAudioThemesPath.PathJoin(files[i]);
 			}
 			
-			string pattern = @"^.*\.wav$";
+			string pattern = @"^.*\.wav.import$";
 			int k = 0;
 			foreach (string path in fullPaths)
 			{
 				if (Regex.IsMatch(path, pattern) && path != _config.MainMenuThemePath)
 				{
-					_battleThemesPaths.Add(path);
-					_battleThemesNames.Add(files[k].Substring(0, files[k].Length - 4));
+					_battleThemesPaths.Add(path.Substring(0, path.Length - 7));
+					_battleThemesNames.Add(files[k].Substring(0, files[k].Length - 11));
 				}
 				k++;
 			}

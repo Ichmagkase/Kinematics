@@ -11,7 +11,7 @@ namespace Game.Server.Udp
 
 		private const string SERVICE_NAME = "UdpServer";
 
-		private HashSet<string> actions = new HashSet<string>() { 
+		private HashSet<string> actions = new HashSet<string>() {
 			"move_left", "move_right", "move_jump", "move_down", "attack_1", "attack_2", "block"
 		};
 
@@ -33,7 +33,7 @@ namespace Game.Server.Udp
 		public override void _Process(double delta)
 		{
 			EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, "attack_2");
-			
+
 			if (peer.GetAvailablePacketCount() > 0)
 			{
 				byte[] packetBytes = peer.GetPacket();
@@ -63,6 +63,11 @@ namespace Game.Server.Udp
 					EventBus.Instance.EmitSignal(EventBus.SignalName.PlayerTwoAction, playerAction[1]);
 				}
 			}
+		}
+
+		public override void _ExitTree()
+		{
+			peer.Close();
 		}
 	}
 }

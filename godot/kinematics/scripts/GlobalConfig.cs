@@ -5,7 +5,9 @@ namespace Game
 {
 	public partial class GlobalConfig : Node
 	{
-		public const string ConfigPath = "res://config/GlobalConfig.ini";
+		public const string DefaultConfigPath = "res://config/GlobalConfig.ini";
+		public const string PersistantConfigPath = "user://config/GlobalConfig.ini";
+
 		public static GlobalConfig Instance { get; private set; }
 
 		public string GameScenePath;
@@ -55,6 +57,17 @@ namespace Game
 		private const string DefaultMainMenuThemePath = "res://music/themes/main-menu.wav";
 
 		private ConfigFile _globalConfigFile;
+		private bool _persistConfig = false;
+
+		private Error CreateDirectoryToPathIfNotExists(string path)
+		{
+			string dir = path.GetBaseDir();
+			if (!DirAccess.DirExistsAbsolute(dir))
+			{
+				return DirAccess.MakeDirRecursiveAbsolute(dir);
+			}
+			return Error.Ok;
+		}
 
 		public override void _Ready()
 		{
@@ -65,14 +78,47 @@ namespace Game
 				return;
 			}
 			Instance = this;
-			
+
 			_globalConfigFile = new ConfigFile();
-			Error err = _globalConfigFile.Load(ConfigPath);
-			if (err != Error.Ok)
+
+			Error persistConfigErr = _globalConfigFile.Load(PersistantConfigPath);
+
+			// Load defaults if persistant config is not available.
+			if (persistConfigErr != Error.Ok)
 			{
-				GD.PrintErr($"Failed to load config file: {ConfigPath}: {err}");
-				LoadDefaults();
-				return;
+				_globalConfigFile.Clear();
+				Error defaultConfigErr = _globalConfigFile.Load(DefaultConfigPath);
+				if (defaultConfigErr != Error.Ok)
+				{
+					GD.PrintErr($"Failed to load default config file: {DefaultConfigPath}: {defaultConfigErr}");
+					GD.PrintErr("Warning: Loading internal defaults and not persisting config");
+					LoadDefaults();
+					return;
+				}
+			}
+
+			// If the persistant config does not exist, create it using the loaded default config.
+			if (persistConfigErr == Error.FileNotFound)
+			{
+				Error createDirErr = CreateDirectoryToPathIfNotExists(PersistantConfigPath);
+				if (createDirErr != Error.Ok)
+				{
+					GD.PrintErr($"Failed to create directories to persistant config: {PersistantConfigPath}: {createDirErr}");
+					GD.PrintErr($"Warning: Not persisting config");
+				}
+				else
+				{
+					Error saveErr = _globalConfigFile.Save(PersistantConfigPath);
+					if (saveErr != Error.Ok)
+					{
+						GD.PrintErr($"Failed to create persistant config file: {PersistantConfigPath}: {saveErr}");
+					}
+					_persistConfig = true;
+				}
+			}
+			else
+			{
+				_persistConfig = true;
 			}
 
 			GameScenePath       = (string)_globalConfigFile.GetValue(SectionDefault, KeyGameScene,        DefaultGameScene);
@@ -98,37 +144,40 @@ namespace Game
 
 		private void LoadDefaults()
 		{
-			GameScenePath       = DefaultGameScene;
-			PauseScenePath      = DefaultPauseScene;
-			PauseActionName     = DefaultPauseAction;
-			HomeScenePath       = DefaultHomeScene;
-			FontPath            = DefaultFont;
+			GameScenePath = DefaultGameScene;
+			PauseScenePath = DefaultPauseScene;
+			PauseActionName = DefaultPauseAction;
+			HomeScenePath = DefaultHomeScene;
+			FontPath = DefaultFont;
 			GameAudioThemesPath = DefaultAudioThemesPath;
-			GameAudioPath       = DefaultAudioPath;
-			PlayerCount			= DefaultPlayerCount;
-			PlayerPath		    = DefaultPlayerPath;
+			GameAudioPath = DefaultAudioPath;
+			PlayerCount = DefaultPlayerCount;
+			PlayerPath = DefaultPlayerPath;
 
 			ToolTips = new List<string>
 			{
 				"A Xbox Kinect? What are you gonna do with that?!?",
 				"The word 'Kinematics' was introduced in the 19th century by the French physicist Ampère",
-                "The software docuemntation for the Kienct library sucks."
+				"The software docuemntation for the Kienct library sucks."
 			};
 		}
 
 		private void SaveConfigFile()
 		{
-			Error err = _globalConfigFile.Save(ConfigPath);
-			if (err != Error.Ok)
+			if (_persistConfig)
 			{
-				GD.PrintErr($"Failed to save config file: {ConfigPath}: {err}");
+				Error err = _globalConfigFile.Save(PersistantConfigPath);
+				if (err != Error.Ok)
+				{
+					GD.PrintErr($"Failed to save to persistant config: {PersistantConfigPath}: {err}");
+				}
 			}
 		}
 
 		public void SetGameAudioPath(string themePath)
 		{
 			GameAudioPath = themePath;
-			_globalConfigFile.SetValue(SectionDefault, KeyCurrentThemePath, themePath);			
+			_globalConfigFile.SetValue(SectionDefault, KeyCurrentThemePath, themePath);
 			SaveConfigFile();
 		}
 	}
