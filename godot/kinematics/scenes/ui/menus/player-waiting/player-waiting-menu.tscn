@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://cstkkbkmcgvfp" path="res://art/maps/main/bg/frame_01_delay-0.04s.png" id="2_j4d6v"]
 [ext_resource type="PackedScene" uid="uid://dggljfxmvhp0n" path="res://scenes/ui/menus/player-waiting/waiting-player-ready.tscn" id="3_6gdax"]
 [ext_resource type="Texture2D" uid="uid://bfgacujb8fed8" path="res://art/maps/main/bg/frame_02_delay-0.04s.png" id="3_gs4du"]
+[ext_resource type="PackedScene" uid="uid://bf2fojgpppgrs" path="res://scenes/ui/menus/player-waiting/countdown.tscn" id="3_s5rwh"]
 [ext_resource type="Texture2D" uid="uid://b38mls21s5vuf" path="res://art/maps/main/bg/frame_03_delay-0.04s.png" id="4_6gdax"]
+[ext_resource type="PackedScene" uid="uid://cb63jpjtcftpo" path="res://scenes/game-menu-layer.tscn" id="4_uxgsv"]
 [ext_resource type="Texture2D" uid="uid://da52waapfod4p" path="res://art/maps/main/bg/frame_04_delay-0.04s.png" id="5_pelrv"]
 [ext_resource type="Texture2D" uid="uid://ba3g187wo6g36" path="res://art/maps/main/bg/frame_05_delay-0.04s.png" id="6_s5rwh"]
 [ext_resource type="Texture2D" uid="uid://c6ualmi57d5tt" path="res://art/maps/main/bg/frame_06_delay-0.04s.png" id="7_uxgsv"]
@@ -113,8 +115,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_gs4du")
-WaitingUntilTrackedMenu = ExtResource("24_h38uw")
 WaitingPlayerReadyMenu = ExtResource("3_6gdax")
+CountdownMenu = ExtResource("3_s5rwh")
+GameScene = ExtResource("4_uxgsv")
 
 [node name="Parallax2D" type="Parallax2D" parent="." unique_id=324063820]
 scroll_offset = Vector2(-50, -2)
