@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://bcctqaj0h3hnv"]
 
+[ext_resource type="Script" uid="uid://5n522pd2ufpv" path="res://scenes/ui/menus/player-waiting/scripts/PlayerWaitingMenu.cs" id="1_gs4du"]
 [ext_resource type="Texture2D" uid="uid://bcyuspi4sc2af" path="res://art/maps/main/bg/frame_00_delay-0.04s.png" id="1_w001f"]
 [ext_resource type="Texture2D" uid="uid://cstkkbkmcgvfp" path="res://art/maps/main/bg/frame_01_delay-0.04s.png" id="2_j4d6v"]
+[ext_resource type="PackedScene" uid="uid://dggljfxmvhp0n" path="res://scenes/ui/menus/player-waiting/waiting-player-ready.tscn" id="3_6gdax"]
 [ext_resource type="Texture2D" uid="uid://bfgacujb8fed8" path="res://art/maps/main/bg/frame_02_delay-0.04s.png" id="3_gs4du"]
 [ext_resource type="Texture2D" uid="uid://b38mls21s5vuf" path="res://art/maps/main/bg/frame_03_delay-0.04s.png" id="4_6gdax"]
 [ext_resource type="Texture2D" uid="uid://da52waapfod4p" path="res://art/maps/main/bg/frame_04_delay-0.04s.png" id="5_pelrv"]
@@ -110,6 +112,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_gs4du")
+WaitingUntilTrackedMenu = ExtResource("24_h38uw")
+WaitingPlayerReadyMenu = ExtResource("3_6gdax")
 
 [node name="Parallax2D" type="Parallax2D" parent="." unique_id=324063820]
 scroll_offset = Vector2(-50, -2)
@@ -121,8 +126,8 @@ scale = Vector2(4.907, 4.959)
 sprite_frames = SubResource("SpriteFrames_0ekea")
 autoplay = "default"
 
-[node name="WaitingUntilTracked" parent="." unique_id=527496795 instance=ExtResource("24_h38uw")]
-layout_mode = 1
-
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=2087311546]
 script = ExtResource("25_j4d6v")
+
+[node name="WaitingUntilTracked" parent="." unique_id=527496795 instance=ExtResource("24_h38uw")]
+layout_mode = 1
