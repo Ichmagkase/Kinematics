@@ -130,6 +130,7 @@ sprite_frames = SubResource("SpriteFrames_0ekea")
 autoplay = "default"
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=2087311546]
+volume_db = 5.0
 script = ExtResource("25_j4d6v")
 
 [node name="WaitingUntilTracked" parent="." unique_id=527496795 instance=ExtResource("24_h38uw")]
