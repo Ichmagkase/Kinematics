@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GlobalConfig="*uid://b445n8tn4lb2a"
 EventBus="*uid://bwd7bcmgc5040"
 ProcessCreator="*uid://dgh4csgf8o17w"
+UdpServer="*uid://cnm34hsheqxj2"
 
 [display]
 
