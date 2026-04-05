@@ -28,7 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://d25aq23ivo5k3" path="res://art/maps/main/bg/frame_21_delay-0.04s.png" id="22_1vr25"]
 [ext_resource type="Texture2D" uid="uid://mk3aiq5wmruo" path="res://art/maps/main/bg/frame_22_delay-0.04s.png" id="23_d4ouj"]
 [ext_resource type="PackedScene" uid="uid://d3oeurua8kxly" path="res://scenes/ui/menus/player-waiting/waiting-until-tracked.tscn" id="24_h38uw"]
-[ext_resource type="Script" uid="uid://bdcoblocbytia" path="res://scenes/audio/scripts/GameAudioPlayer.cs" id="25_j4d6v"]
+[ext_resource type="Script" uid="uid://dw8n74movdekb" path="res://scenes/audio/scripts/MainMenuAudioPlayer.cs" id="28_s5rwh"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_0ekea"]
 animations = [{
@@ -131,7 +131,7 @@ autoplay = "default"
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=2087311546]
 volume_db = 5.0
-script = ExtResource("25_j4d6v")
+script = ExtResource("28_s5rwh")
 
 [node name="WaitingUntilTracked" parent="." unique_id=527496795 instance=ExtResource("24_h38uw")]
 layout_mode = 1
