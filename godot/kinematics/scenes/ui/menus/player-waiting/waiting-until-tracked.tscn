@@ -3,7 +3,6 @@
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_b54s7"]
 [ext_resource type="Script" uid="uid://cdh4u2w68gyhx" path="res://scenes/ui/menus/player-waiting/scripts/TrackerWaiter.cs" id="1_tno80"]
 [ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_r73yv"]
-[ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_j03i8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b54s7"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -60,7 +59,6 @@ theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_jtxyy")
 theme_override_styles/hover = SubResource("StyleBoxFlat_37f5x")
 text = "Skip"
-script = ExtResource("3_j03i8")
 
 [connection signal="pressed" from="VBoxContainer/HomeButton" to="VBoxContainer/HomeButton" method="_OnPressed"]
-[connection signal="pressed" from="VBoxContainer/SkipButton" to="VBoxContainer/SkipButton" method="_OnPressed"]
+[connection signal="pressed" from="VBoxContainer/SkipButton" to="." method="_OnSkipButtonPressed"]
