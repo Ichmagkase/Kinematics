@@ -45,6 +45,7 @@ offset_bottom = 753.0
 
 [node name="HomeButton" type="Button" parent="VBoxContainer" unique_id=437085256]
 layout_mode = 2
+tooltip_text = "Go Back to Home Screen"
 theme_override_fonts/font = ExtResource("1_b54s7")
 theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_b54s7")
@@ -54,6 +55,7 @@ script = ExtResource("2_r73yv")
 
 [node name="SkipButton" type="Button" parent="VBoxContainer" unique_id=2020022159]
 layout_mode = 2
+tooltip_text = "Skip this Step"
 theme_override_fonts/font = ExtResource("1_b54s7")
 theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_jtxyy")

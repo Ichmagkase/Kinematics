@@ -46,6 +46,7 @@ offset_bottom = 928.0
 
 [node name="HomeButton" type="Button" parent="ControlsVBoxContainer" unique_id=501811013]
 layout_mode = 2
+tooltip_text = "Go Back to Home Screen"
 theme_override_fonts/font = ExtResource("1_h0gt5")
 theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_204qv")
@@ -55,6 +56,7 @@ script = ExtResource("2_pdb5k")
 
 [node name="SkipToGameButton" type="Button" parent="ControlsVBoxContainer" unique_id=1903338001]
 layout_mode = 2
+tooltip_text = "Skip this Step and Start the Game"
 theme_override_fonts/font = ExtResource("1_h0gt5")
 theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_6ekps")
