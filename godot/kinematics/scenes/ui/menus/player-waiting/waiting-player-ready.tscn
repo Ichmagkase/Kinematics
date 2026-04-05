@@ -39,9 +39,9 @@ text = "Block to Ready Up"
 
 [node name="ControlsVBoxContainer" type="VBoxContainer" parent="." unique_id=2116743459]
 layout_mode = 0
-offset_left = 782.5
+offset_left = 767.5
 offset_top = 750.0
-offset_right = 1137.5
+offset_right = 1152.5
 offset_bottom = 928.0
 
 [node name="HomeButton" type="Button" parent="ControlsVBoxContainer" unique_id=501811013]
