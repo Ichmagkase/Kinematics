@@ -8,11 +8,17 @@ public partial class TrackerWaiter : Node
 
 	private double WAIT_DURATION_SECS = 1.5;
 
-	private bool _trackerIsReady = false;
+	private bool _playerOneTracked = false;
+	private bool _playerTwoTracked = false;
 
-	public void SetTrackerReady(string action)
+	private void SetPlayerOneTracked(string action)
 	{
-		_trackerIsReady = true;
+		_playerOneTracked = true;
+	}
+
+	private void SetPlayerTwoTracked(string action)
+	{
+		_playerTwoTracked = true;
 	}
 
 	public void _OnSkipButtonPressed()
@@ -33,15 +39,14 @@ public partial class TrackerWaiter : Node
 			SetProcess(true);
 		};
 
-		// If player tracking data starts arriving, then the tracker is ready to go.
-		EventBus.Instance.PlayerOneAction += SetTrackerReady;
-		EventBus.Instance.PlayerTwoAction += SetTrackerReady;
+		EventBus.Instance.PlayerOneAction += SetPlayerOneTracked;
+		EventBus.Instance.PlayerTwoAction += SetPlayerTwoTracked;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (_trackerIsReady)
+		if (_playerOneTracked && _playerTwoTracked)
 		{
 			EmitSignal(SignalName.TrackerReady);
 		}
@@ -49,7 +54,7 @@ public partial class TrackerWaiter : Node
 
 	public override void _ExitTree()
 	{
-		EventBus.Instance.PlayerOneAction -= SetTrackerReady;
-		EventBus.Instance.PlayerTwoAction -= SetTrackerReady;
+		EventBus.Instance.PlayerOneAction -= SetPlayerOneTracked;
+		EventBus.Instance.PlayerTwoAction -= SetPlayerTwoTracked;
 	}
 }
