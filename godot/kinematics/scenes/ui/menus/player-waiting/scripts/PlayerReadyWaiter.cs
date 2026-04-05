@@ -36,6 +36,11 @@ public partial class PlayerReadyWaiter : Node
 		}
 	}
 
+	public void _OnSkipToGameButtonPressed()
+	{
+		EmitSignal(SignalName.AllPlayersReady);
+	}
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{

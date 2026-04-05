@@ -3,7 +3,6 @@
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="1_h0gt5"]
 [ext_resource type="Script" uid="uid://csg383ysocudr" path="res://scenes/ui/menus/player-waiting/scripts/PlayerReadyWaiter.cs" id="1_pdb5k"]
 [ext_resource type="Script" uid="uid://cfhf2fvq4kuy7" path="res://scenes/ui/menus/scripts/HomeButton.cs" id="2_pdb5k"]
-[ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="3_lnghf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_204qv"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -61,7 +60,6 @@ theme_override_font_sizes/font_size = 80
 theme_override_styles/normal = SubResource("StyleBoxFlat_6ekps")
 theme_override_styles/hover = SubResource("StyleBoxFlat_2beac")
 text = "Skip to Game"
-script = ExtResource("3_lnghf")
 
 [node name="Player1VBoxContainer" type="VBoxContainer" parent="." unique_id=1658952719]
 layout_mode = 0
@@ -106,4 +104,4 @@ text = "Not Ready"
 horizontal_alignment = 1
 
 [connection signal="pressed" from="ControlsVBoxContainer/HomeButton" to="ControlsVBoxContainer/HomeButton" method="_OnPressed"]
-[connection signal="pressed" from="ControlsVBoxContainer/SkipToGameButton" to="ControlsVBoxContainer/SkipToGameButton" method="_OnPressed"]
+[connection signal="pressed" from="ControlsVBoxContainer/SkipToGameButton" to="." method="_OnSkipToGameButtonPressed"]
