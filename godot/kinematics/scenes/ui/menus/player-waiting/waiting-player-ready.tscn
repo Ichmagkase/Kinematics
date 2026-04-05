@@ -24,8 +24,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_pdb5k")
-PlayerOneReadyLabel = NodePath("Player1VBoxContainer/Player1Label")
-PlayerTwoReadyLabel = NodePath("Player2VBoxContainer/Player2Label")
+PlayerOneReadyLabel = NodePath("Player1VBoxContainer/ReadyLabel")
+PlayerTwoReadyLabel = NodePath("Player2VBoxContainer/ReadyLabel")
 
 [node name="Label" type="Label" parent="." unique_id=442137438]
 layout_mode = 0
