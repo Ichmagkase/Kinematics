@@ -35,11 +35,11 @@ public partial class Countdown : Node
 		_timeLeftSecs--;
 		if (_timeLeftSecs > 0)
 		{
-			_timer.Timeout += NextCountdownStep;
 			UpdateAndAnimateLabel(_countdownLabel, _timeLeftSecs.ToString());
 		}
 		else
 		{
+			_timer.Timeout -= NextCountdownStep;
 			EmitSignal(SignalName.CountdownFinished);
 		}
 	}
@@ -49,6 +49,10 @@ public partial class Countdown : Node
 	{
 		_countdownLabel = GetNode<Label>("CountdownLabel");
 		_timer = GetNode<Timer>("Timer");
+
+		_timer.Timeout += NextCountdownStep;
+		_timer.Start();
+
 		NextCountdownStep();
 	}
 
