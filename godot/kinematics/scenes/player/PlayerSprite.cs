@@ -1,10 +1,13 @@
 using System;
+using System.Linq;
 using Godot;
 
 namespace Game.Player
 {
 	public partial class PlayerSprite : AnimatedSprite2D
 	{
+		private AudioStreamPlayer2D soundEffectPlayer;
+
 		private static String _jumpUpAnimationName = "jump_up";
 		public String JumpUpAnimationName {get => _jumpUpAnimationName;}
 
@@ -19,6 +22,9 @@ namespace Game.Player
 
 		private static String _runAnimationName = "run";
 		public String RunAnimationName {get => _runAnimationName;}
+
+		private static String _hitAnimationName = "hit";
+		public String HitAnimationName {get => _hitAnimationName;}
 
 		private static String _attack1AnimationName = "attack_1";
 		public String Attack1AnimationName {get => _attack1AnimationName;}
@@ -38,6 +44,9 @@ namespace Game.Player
 		private bool _playingDeathAnimation = false;
 		public bool PlayingDeathAnimation {get => _playingDeathAnimation;}
 
+		private bool _playingHitAnimation = false;
+		public bool PlayingHitAnimation {get => _playingHitAnimation;}
+
 		private void OnAnimationFinished()
 		{
 			if (_playingAttackingAnimation)
@@ -50,6 +59,11 @@ namespace Game.Player
 				var nextScene = GD.Load<PackedScene>(GlobalConfig.Instance.HomeScenePath);
 				GetTree().ChangeSceneToPacked(nextScene);
 			}
+			if (_playingHitAnimation)
+            {
+                _playingHitAnimation = false;
+				Idle();
+            }
 		}
 		public void JumpUp()
 		{
@@ -94,6 +108,8 @@ namespace Game.Player
 			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack1AnimationName);
+			playSound(_attack1AnimationName);
+
 		}
 
 		public void Attack2() 
@@ -101,6 +117,8 @@ namespace Game.Player
 			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack2AnimationName);
+			playSound(_attack1AnimationName);
+			
 		}
 
 		public void Block() 
@@ -118,14 +136,22 @@ namespace Game.Player
 
 		public void Idle()
 		{
-			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingHitAnimation) return;
 			Play(_idleAnimationName);
+		}
+
+		public void Hit()
+		{
+			if (_playingAttackingAnimation) return;
+			_playingHitAnimation = true;
+			Play(_hitAnimationName);
 		}
 
 		public void Death()
 		{
 			_playingAttackingAnimation = false;
 			_playingBlockingAnimation = false;
+			_playingHitAnimation = false;
 			_playingDeathAnimation = true;
 			Play(_deathAnimationName);
 		}
@@ -134,11 +160,22 @@ namespace Game.Player
 		{
 			return Animation;
 		}
+
+		private void playSound(string action)
+        {
+			soundEffectPlayer.Stream = (AudioStream)GD.Load($"{GlobalConfig.Instance.PlayerSoundEffectPath}/{action}.wav");			
+			soundEffectPlayer.Play();
+        }
  
 		public override void _Ready()
 		{
 			Idle();
 			AnimationFinished += OnAnimationFinished;
+			soundEffectPlayer = GetParent().GetNode<AudioStreamPlayer2D>("AudioStreamPlayer2D");
+			if (soundEffectPlayer == null)
+            {
+				GD.PrintErr("failed to find AudioStreamPlayer2D for spirtes");
+            }
 		}
 	}
 }

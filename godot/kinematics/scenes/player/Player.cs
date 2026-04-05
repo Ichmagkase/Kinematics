@@ -47,6 +47,9 @@ namespace Game.Player
 		public bool OnBlockCooldown;
 		public float Damage;
 
+		public ProgressBar HealthBar;
+		public Label HealthBarLabel;
+
 		public void HandleActionSignal(string e)
 		{
 			// The logic will be handled in _PhysicsProcess()
@@ -89,11 +92,14 @@ namespace Game.Player
 			var newRect = new RectangleShape2D();
 			newRect.Size = originalRect.Size;
 			areaShape.Shape = newRect;
+
 		}
 
 		public override void _PhysicsProcess(double delta)
 		{
-			if (Health < 0) return;
+			HandleHealthBar();
+			if (Health <= 0) return;
+			
 
 			HandleGravity(delta);
 			lock (_inputLock);
@@ -248,6 +254,7 @@ namespace Game.Player
 			if (!theyAreBlocking /* || theyAreBlocking && !isFacingTowardMe*/)
 			{
 				otherPlayer.Health -= _playerConfig.Damage;
+				otherPlayer._playerSprite.Hit();
 			}
 			else if (theyAreBlocking)
 			{
@@ -258,6 +265,7 @@ namespace Game.Player
 					otherPlayer.Health -=  _playerConfig.Damage * 1.2f;
 					otherPlayer.OnBlockCooldown = true;
 					otherPlayer._playerSprite.EndBlock();
+					otherPlayer._playerSprite.Hit();
 				}
 			}
 
@@ -286,5 +294,21 @@ namespace Game.Player
 			_playerSprite.Death();
 		}
 
+		private void HandleHealthBar()
+		{
+			var normalizedHealthVal = Health < 0 ? 0 : Health;
+			HealthBar.Value = normalizedHealthVal;
+			HealthBarLabel.Text = $"{normalizedHealthVal}";
+
+			float ratio = (float)(HealthBar.Value / HealthBar.MaxValue);
+			float filledWidth = HealthBar.Size.X * ratio;
+			
+			var fill = new StyleBoxFlat();
+			var green = new Color(0.2f, 0.8f, 0.2f);
+			var red   = new Color(0.9f, 0.2f, 0.2f);
+			
+			fill.BgColor = red.Lerp(green, filledWidth / HealthBar.Size.X);
+			HealthBar.AddThemeStyleboxOverride("fill", fill);			
+		}
 	}
 }

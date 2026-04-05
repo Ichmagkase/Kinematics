@@ -27,10 +27,10 @@
 [ext_resource type="FontFile" uid="uid://dl6tfy4vnkk30" path="res://fonts/Jersey10-Regular.ttf" id="24_iq3br"]
 [ext_resource type="Script" uid="uid://dth3r1ij674pg" path="res://scenes/ui/menus/scripts/StartButton.cs" id="24_mec52"]
 [ext_resource type="Script" uid="uid://cugu2u3817yee" path="res://scenes/ui/menus/scripts/EndButton.cs" id="25_ck483"]
-[ext_resource type="AudioStream" uid="uid://dh7hvhb3ds6a1" path="res://music/themes/battle-theme-main.wav" id="27_6ffme"]
 [ext_resource type="PackedScene" uid="uid://bcctqaj0h3hnv" path="res://scenes/ui/menus/player-waiting/player-waiting-menu.tscn" id="27_6sme2"]
 [ext_resource type="Script" uid="uid://b6sk6tn2mbil" path="res://scenes/ui/menus/scripts/ToolTipLabel.cs" id="28_4fbje"]
-[ext_resource type="Script" uid="uid://bdcoblocbytia" path="res://scenes/audio/scripts/GameAudioPlayer.cs" id="29_3re2l"]
+[ext_resource type="AudioStream" uid="uid://c2iamyb1yfsf5" path="res://music/themes/main-menu.wav" id="29_4fbje"]
+[ext_resource type="Script" uid="uid://dw8n74movdekb" path="res://scenes/audio/scripts/MainMenuAudioPlayer.cs" id="30_4fbje"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bm8d5"]
 atlas = ExtResource("1_irf0g")
@@ -237,10 +237,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -168.5
-offset_top = -182.5
-offset_right = 168.5
-offset_bottom = 182.5
+offset_left = -168.0
+offset_top = -166.0
+offset_right = 169.0
+offset_bottom = 547.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -276,14 +276,22 @@ theme_override_font_sizes/font_size = 80
 text = "Music"
 horizontal_alignment = 1
 
-[node name="MusicContainer" type="FoldableContainer" parent="VBoxContainer" unique_id=2042573093]
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=152423757]
+clip_contents = true
+custom_minimum_size = Vector2(0, 450)
 layout_mode = 2
+
+[node name="MusicContainer" type="FoldableContainer" parent="VBoxContainer/Control" unique_id=2042573093]
+layout_mode = 0
+offset_top = 4.0
+offset_right = 337.0
+offset_bottom = 56.0
 theme_override_fonts/font = ExtResource("24_iq3br")
 theme_override_font_sizes/font_size = 40
 folded = true
 title = "Music Chocies"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MusicContainer" unique_id=1057195554]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Control/MusicContainer" unique_id=1057195554]
 visible = false
 layout_mode = 2
 
@@ -294,9 +302,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -196.0
+offset_left = -222.0
 offset_top = -477.0
-offset_right = 248.0
+offset_right = 222.0
 offset_bottom = -214.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -312,22 +320,23 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -324.0
-offset_top = -301.0
-offset_right = 409.0
-offset_bottom = -166.0
+offset_left = -370.0
+offset_top = -297.0
+offset_right = 363.0
+offset_bottom = -162.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("24_iq3br")
 theme_override_font_sizes/font_size = 40
 text = "A Xbox Kinect? What are they gonna do with that?!?"
+horizontal_alignment = 1
 script = ExtResource("28_4fbje")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=592734547]
-stream = ExtResource("27_6ffme")
+stream = ExtResource("29_4fbje")
 volume_db = 5.0
 autoplay = true
-script = ExtResource("29_3re2l")
+script = ExtResource("30_4fbje")
 
 [connection signal="pressed" from="VBoxContainer/StartButton" to="VBoxContainer/StartButton" method="_OnPressed"]
 [connection signal="pressed" from="VBoxContainer/EndButton" to="VBoxContainer/EndButton" method="_OnPressed"]

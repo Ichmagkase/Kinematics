@@ -16,12 +16,21 @@ namespace Game
 
 		private void playCurrentTheme()
 		{
+			if (_currBattleTheme == null) return;
 			_musicPlayer.Stream = (AudioStream)GD.Load(_currBattleTheme);
 			_musicPlayer.Play();
 		}
 
 		private void _OnMusicButtonPressed(string songName)
 		{
+
+			if (songName == "None")
+			{
+				_currBattleTheme = null;
+				_config.SetGameAudioPath("");
+				_musicPlayer.Stop();
+				return;
+			}
 
 			int i = 0;
 			foreach (string name in _battleThemesNames) 
@@ -35,6 +44,7 @@ namespace Game
 				}
 				i++;
 			}
+			
 		}
 
 		private void GetBattleThemes()
@@ -50,7 +60,7 @@ namespace Game
 			int k = 0;
 			foreach (string path in fullPaths)
 			{
-				if (Regex.IsMatch(path, pattern))
+				if (Regex.IsMatch(path, pattern) && path != _config.MainMenuThemePath)
 				{
 					_battleThemesPaths.Add(path.Substring(0, path.Length - 7));
 					_battleThemesNames.Add(files[k].Substring(0, files[k].Length - 11));
@@ -59,12 +69,13 @@ namespace Game
 			}
 
 			_currBattleTheme = _config.GameAudioPath;
+			_battleThemesNames.Add("None"); // For Mute
 			
 		}
 
 		private void LoadBattleNames()
 		{
-			_musicContainer = GetNode<VBoxContainer>("VBoxContainer/MusicContainer/VBoxContainer");
+			_musicContainer = GetNode<VBoxContainer>("VBoxContainer/Control/MusicContainer/VBoxContainer");
 			if (_musicContainer == null)
 			{
 				GD.PrintErr("failed to get music container for soundtracks");
@@ -107,10 +118,6 @@ namespace Game
 			LoadBattleNames();
 			LoadToolTipString();
 			
-		}
-
-		public override void _Process(double delta)
-		{
 		}
 	}
 }
