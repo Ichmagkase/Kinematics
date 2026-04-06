@@ -33,7 +33,7 @@ private:
 	IBodyFrameReader* pBodyFrameReader;
 	IVisualGestureBuilderDatabase* pGestureDatabase;
 	
-	UINT gestureCount;
+	UINT gestureCount = 0;
 	IGesture** pGestures;
 	Players players;
 	IBody* ppBodies[BODY_COUNT] = { nullptr };

@@ -1,9 +1,4 @@
 #include "ipc.h"
-//#include "sensor.h"
-//#include "test.h"
-//#include <iostream>
-//#include "data.h"
-
 #include <iostream>
 #include <string>
 #include <functional>
@@ -21,11 +16,15 @@ void GestureListener(struct GestureData data) {
 }
 
 int main() {
+	std::cout << "initializing sensor..." << std::endl;
 	Sensor sensor;
 	Sleep(30); //Allow extra time to initialize
+	std::cout << "waiting for players ..." << std::endl;
 	sensor.awaitPlayersReady();
+	std::cout << "listening for gestures" << std::endl;
+	// It would make alot more sense if you passed the ipc pipeline into listen for it to use, alas.
+	// This method is probably better for debugging anyway.
 	sensor.listen(&GestureListener);
-	// debugGestures();
 }
 
 //std::string GetHRESULTErrorMessage(HRESULT hr);

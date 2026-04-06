@@ -27,7 +27,6 @@ void Sensor::initializeGesture()
 {
 	ERROR_CHECK(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"gestures.gbd", &pGestureDatabase));
 
-	UINT gestureCount = 0;
 	ERROR_CHECK(pGestureDatabase->get_AvailableGesturesCount(&gestureCount));
 
 	pGestures = new IGesture * [gestureCount];
@@ -59,12 +58,9 @@ void Sensor::update()
 void Sensor::updatePlayerBodies() {
 	IBodyFrame* pBodyFrame = nullptr;
 	HRESULT hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
-	if (hr == E_PENDING) {
-		Sleep(30);
-		updatePlayerBodies();
-	}
-	else if (FAILED(hr)) {
-		ERROR_CHECK(hr);
+	while (hr == E_PENDING) {
+		Sleep(60);
+		hr = pBodyFrameReader->AcquireLatestFrame(&pBodyFrame);
 	}
 
 	if (!pBodyFrame) {
@@ -139,7 +135,6 @@ void Sensor::updatePlayerGestures() {
 				pGestureFrame = nullptr;
 				continue;
 			}
-
 			bool gesturing = false;
 			for (UINT j = 0; j < gestureCount; ++j) {
 				if (gesturing) break;
@@ -178,7 +173,7 @@ void Sensor::updatePlayerGestures() {
 			}
 
 			if (!gesturing) {
-				std::cout << "Player idle:  " << std::endl;
+				std::cout << "Player" << i + 1 << "idle:  " << std::endl;
 			}
 
 			pGestureFrame->Release();
@@ -273,10 +268,8 @@ Sensor::~Sensor()
 	kinect->Close();
 }
 
-void Sensor::listen()
+void Sensor::listen(void (*gestureListener)(struct GestureData))
 {
-	Sensor::awaitPlayersReady();
-
 	while (true) {
 		update();
 		Sleep(30);
