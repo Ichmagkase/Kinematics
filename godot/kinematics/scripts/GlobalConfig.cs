@@ -21,6 +21,8 @@ namespace Game
 		public string PlayerHudPath;
 		public string PlayerSoundEffectPath;
 		public string MainMenuThemePath;
+		public string EndScenePath;
+		public string EndSceneThemePath;
 		public int PlayerCount;
 		public List<string> ToolTips;
 
@@ -40,7 +42,9 @@ namespace Game
 		private const string KeyPlayerPath		   = "player_scene";
 		private const string KeyPlayerHudPath 	   = "player_hud_scene";
 		private const string KeyPlayerSoundEffectPath = "player_sound_effects";
-		private const string KeyMainMenuThemePath = "main_menu_theme_path";
+		private const string KeyMainMenuThemePath 	= "main_menu_theme_path";
+		private const string KeyEndScenePath 		= "end_scene";
+		private const string KeyEndSceneThemePath 	= "end_screen_theme_path";
 
 		// Default values
 		private const string DefaultGameScene        = "res://scenes/game-menu-layer.tscn";
@@ -55,6 +59,8 @@ namespace Game
 		private const int DefaultPlayerCount 	 	 = 2;
 		private const string DefaultPlayerSoundEffectPath = "res://music/sound-effects/player";
 		private const string DefaultMainMenuThemePath = "res://music/themes/main-menu.wav";
+		private const string DefaultEndScenePath 	  = "res://scenes/ui/menus/end-screen.tscn";
+		private const string DefaultEndSceneThemePath = "res://music/exclusive/you win.wav";
 
 		private ConfigFile _globalConfigFile;
 		private bool _canPersistConfig = false;
@@ -133,6 +139,8 @@ namespace Game
 			PlayerCount		    = (int)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerCount, 	  DefaultPlayerCount);
 			PlayerSoundEffectPath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyPlayerSoundEffectPath, 	  DefaultPlayerSoundEffectPath);
 			MainMenuThemePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyMainMenuThemePath, 	  DefaultMainMenuThemePath);
+			EndScenePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyEndScenePath, 	  DefaultEndScenePath);
+			EndSceneThemePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyEndSceneThemePath, 	  DefaultEndSceneThemePath);
 
 			ToolTips = new List<string>();
 			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());

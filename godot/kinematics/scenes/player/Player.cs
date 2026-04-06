@@ -251,7 +251,7 @@ namespace Game.Player
 			var isFacingTowardMe = otherPlayer._playerSprite.FlipH != _playerSprite.FlipH;
 			var theyAreBlocking = otherPlayer._playerSprite.PlayingBlockingAnimation;
 
-			if (!theyAreBlocking /* || theyAreBlocking && !isFacingTowardMe*/)
+			if (!theyAreBlocking || theyAreBlocking && !isFacingTowardMe)
 			{
 				otherPlayer.Health -= _playerConfig.Damage;
 				otherPlayer._playerSprite.Hit();
