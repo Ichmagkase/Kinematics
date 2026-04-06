@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Godot;
 
 namespace Game.Player
@@ -47,6 +46,8 @@ namespace Game.Player
 		private bool _playingHitAnimation = false;
 		public bool PlayingHitAnimation {get => _playingHitAnimation;}
 
+		private bool _playingJumpAnimation = false;
+		
 		private void OnAnimationFinished()
 		{
 			if (_playingAttackingAnimation)
@@ -56,23 +57,42 @@ namespace Game.Player
 			}
 			if (_playingDeathAnimation)
 			{
-				var nextScene = GD.Load<PackedScene>(GlobalConfig.Instance.HomeScenePath);
-				GetTree().ChangeSceneToPacked(nextScene);
+				var nextScene = GD.Load<PackedScene>(GlobalConfig.Instance.EndScenePath);
+				var instance = nextScene.Instantiate<Control>();
+				var winnerLabel = instance.GetNode<Label>("WinnerLabel");
+				if (GetParent<Player>().PlayerId == 1)
+				{
+					winnerLabel.Text = $"Player 2 Won!";
+				} else
+				{
+					winnerLabel.Text = $"Player 1 Won!";
+				}
+
+				GetTree().ChangeSceneToNode(instance);
 			}
 			if (_playingHitAnimation)
-            {
-                _playingHitAnimation = false;
+			{
+				_playingHitAnimation = false;
 				Idle();
-            }
+			}
 		}
+
+		private void OnSoundFinished()
+		{
+		}
+
 		public void JumpUp()
 		{
+			if (GetCurrentAnimationName() == _jumpUpAnimationName) return;
 			_playingAttackingAnimation = false;
+			_playingJumpAnimation = false;
 			Play(_jumpUpAnimationName);
+			playSound(_jumpUpAnimationName);
 		}
 
 		public void JumpDown()
 		{
+			if (GetCurrentAnimationName() == _jumpDownAnimationName) return;
 			_playingAttackingAnimation = false;
 			Play(_jumpDownAnimationName);
 		}
@@ -99,13 +119,13 @@ namespace Game.Player
 
 		public void Run() 
 		{
-			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingDeathAnimation) return;
 			Play(_runAnimationName);
 		}
 
 		public void Attack1() 
 		{
-			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingDeathAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack1AnimationName);
 			playSound(_attack1AnimationName);
@@ -114,7 +134,7 @@ namespace Game.Player
 
 		public void Attack2() 
 		{
-			if (_playingAttackingAnimation || _playingBlockingAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingDeathAnimation) return;
 			_playingAttackingAnimation = true;
 			Play(_attack2AnimationName);
 			playSound(_attack1AnimationName);
@@ -123,26 +143,28 @@ namespace Game.Player
 
 		public void Block() 
 		{
+			if (_playingDeathAnimation) return;
 			_playingAttackingAnimation = false;
 			_playingBlockingAnimation = true;
 			Play(_blockAnimationName);
 		}
 
 		public void EndBlock()
-        {
-            _playingBlockingAnimation = false;
+		{
+			if (_playingDeathAnimation) return;
+			_playingBlockingAnimation = false;
 			Idle();
-        }
+		}
 
 		public void Idle()
 		{
-			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingHitAnimation) return;
+			if (_playingAttackingAnimation || _playingBlockingAnimation || _playingHitAnimation || _playingDeathAnimation) return;
 			Play(_idleAnimationName);
 		}
 
 		public void Hit()
 		{
-			if (_playingAttackingAnimation) return;
+			if (_playingAttackingAnimation ||  _playingHitAnimation || _playingDeathAnimation) return;
 			_playingHitAnimation = true;
 			Play(_hitAnimationName);
 		}
@@ -162,10 +184,10 @@ namespace Game.Player
 		}
 
 		private void playSound(string action)
-        {
-			soundEffectPlayer.Stream = (AudioStream)GD.Load($"{GlobalConfig.Instance.PlayerSoundEffectPath}/{action}.wav");			
+		{
+			soundEffectPlayer.Stream = (AudioStream)GD.Load($"{GlobalConfig.Instance.PlayerSoundEffectPath}/{action}.wav");	
 			soundEffectPlayer.Play();
-        }
+		}
  
 		public override void _Ready()
 		{
@@ -173,9 +195,10 @@ namespace Game.Player
 			AnimationFinished += OnAnimationFinished;
 			soundEffectPlayer = GetParent().GetNode<AudioStreamPlayer2D>("AudioStreamPlayer2D");
 			if (soundEffectPlayer == null)
-            {
+			{
 				GD.PrintErr("failed to find AudioStreamPlayer2D for spirtes");
-            }
+			}
+			soundEffectPlayer.Finished += OnSoundFinished;
 		}
 	}
 }
