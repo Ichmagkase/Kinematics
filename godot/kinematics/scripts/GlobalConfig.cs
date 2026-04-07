@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Game
 {
@@ -37,7 +38,6 @@ namespace Game
 		private const string KeyFont               = "font";
 		private const string KeyAudioThemes        = "audio_themes";
 		private const string KeyCurrentThemePath   = "current_theme_path";
-		private const string KeyTooltips           = "tooltips";
 		private const string KeyPlayerCount		   = "player_count";
 		private const string KeyPlayerPath		   = "player_scene";
 		private const string KeyPlayerHudPath 	   = "player_hud_scene";
@@ -142,12 +142,22 @@ namespace Game
 			EndScenePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyEndScenePath, 	  DefaultEndScenePath);
 			EndSceneThemePath = (string)_globalConfigFile.GetValue(SectionDefault,    KeyEndSceneThemePath, 	  DefaultEndSceneThemePath);
 
-			ToolTips = new List<string>();
-			var rawTooltips = _globalConfigFile.GetValue(SectionDefault, KeyTooltips, new Godot.Collections.Array());
-			foreach (var tip in (Godot.Collections.Array)rawTooltips)
+			ToolTips = new List<string>
 			{
-				ToolTips.Add(tip.ToString());
-			}
+				"A Xbox Kinect? What are you gonna do with that?!?",
+				"The word 'Kinematics' was introduced in the 19th century by the French physicist Ampère",
+				"The software docuemntation for the Kienct library sucks.",
+				"Eat, sleep, KINECT",
+				"Call me on my Kinect.",
+				"The world is in your hands. And your Kinect.",
+				"Microsoft considered the name 'DirectX Box' for the OG Xbox.",
+				"SHING SHING SHING SHING SHING SHING SHING SHING",
+				"No skeletons were hurt in the making of this video game.", 
+				"I ate that yogurt already??", 
+				"Tip: To trigger a jump, you must jump 16 feet in the air", 
+				"Just Enable It."
+			};
+
 		}
 
 		private void LoadDefaults()
