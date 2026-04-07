@@ -3,7 +3,7 @@ name: Build and Package Kinematics
 on:
     push:
         branches:
-            - "master"
+            - "task/test-cicd"
 
 env:
     GODOT_VERSION: 4.6.1
