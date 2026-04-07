@@ -8,12 +8,13 @@
 #define HOST_IP "192.168.145.143"
 #define HOST_PORT 4242
 
-// Static member initializations
-const std::string IPC::actions[] = { "move_jump", "attack_1", "move_right", "move_left", "block" };
+// Note: P1_READY and P2_READY signals are currently not used.
+const std::string IPC::actions[] = { "move_jump", "attack_1", "attack_2", "move_right", "move_left", "block", "idle", "player1_ready", "player2_ready"};
 SOCKET IPC::ipc_socket = INVALID_SOCKET;
 sockaddr_in IPC::endpoint = {};
+Event IPC::lastPlayer1Event = IDLE;
+Event IPC::lastPlayer2Event = IDLE;
 
-// Constructor implementation
 IPC::IPC() {
 	int status;
 	WSADATA wsaData;
@@ -35,8 +36,9 @@ IPC::IPC() {
 	inet_pton(AF_INET, HOST_IP, &endpoint.sin_addr);
 }
 
-// Method implementation
-int IPC::sendEventPayload(struct Data e) {
+int IPC::sendEventPayload(struct GestureData e) {
+	// Check for duplicate events. This can happen when the same gesture is detected across multiple frames, which is likely since the player will be holding the pose for a few frames.
+
 	std::string packet = e.player + "|" + actions[e.event] + "\n";
 	std::cout << "Sending packet: " << packet << std::endl;
 	int sendResult = sendto(ipc_socket, packet.c_str(), packet.size(), 0, (sockaddr*)&endpoint, sizeof(endpoint));
@@ -46,10 +48,17 @@ int IPC::sendEventPayload(struct Data e) {
 	else {
 		std::cout << "Sent " << sendResult << " bytes" << std::endl;
 	}
+
+	if (e.player == "1") {
+		lastPlayer1Event = e.event;
+	}
+	else if (e.player == "2") {
+		lastPlayer2Event = e.event;
+	}
+
 	return sendResult;
 }
 
-// Destructor implementation
 IPC::~IPC() {
 	closesocket(ipc_socket);
 	WSACleanup();

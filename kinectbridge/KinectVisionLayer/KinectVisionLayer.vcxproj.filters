@@ -18,33 +18,36 @@
     <ClCompile Include="ipc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sensor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="testdata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewSensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data.h">
+    <ClInclude Include="structures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ipc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="sensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test.h">
+    <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\gestures.gbd">
+    <None Include="..\..\..\..\..\..\Downloads\gestures_updated.gbd">
       <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
+    </None>
   </ItemGroup>
 </Project>

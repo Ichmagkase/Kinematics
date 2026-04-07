@@ -1,26 +1,43 @@
 #pragma once
-#include <string>
-#include <functional>
+
 #include <Kinect.h>
 #include <Kinect.VisualGestureBuilder.h>
-#include "data.h"
-#include <array>
+#include "structures.h"
+
+typedef struct Players {
+	UINT64 player1_id = 0;
+	UINT64 player2_id = 0;
+	float player1_height = 0;
+	float player2_height = 0;
+	IVisualGestureBuilderFrameSource* player1_GestureSource;
+	IVisualGestureBuilderFrameReader* player1_GestureReader;
+	IVisualGestureBuilderFrameSource* player2_GestureSource;
+	IVisualGestureBuilderFrameReader* player2_GestureReader;
+} Players;
 
 class Sensor {
 public:
-	Sensor();
+	Sensor(void (*gestureListener)(struct GestureData));
 	~Sensor();
-	void listen(void(*GestureCallback)(struct Data), std::array<UINT64, 2> players);
-	std::array<UINT64, 2> awaitPlayersReady();
-	std::array<IBody*, 2> refreshAndGetPlayers(std::array<UINT64, 2> &players);
+	void awaitPlayersReady();
+	void listen();
+	void (*gestureListener)(struct GestureData);
 private:
-	BOOLEAN playersAreTracked(std::array<IBody*, 2> players);
-	IBodyFrameReader* pBodyFrameReader;
+	void initialize();
+	void initializeSensor();
+	void initializeBody();
+	void initializeGesture();
+	void update();
+	void updatePlayerBodies();
+	void updatePlayerGestures();
+private:
+	IKinectSensor* kinect;
 	IBodyFrameSource* pBodyFrameSource;
-	IKinectSensor* pSensor;
-	IVisualGestureBuilderFrameSource* pGestureFrameSource;
-	IVisualGestureBuilderFrameReader* pGestureFrameReader;
+	IBodyFrameReader* pBodyFrameReader;
 	IVisualGestureBuilderDatabase* pGestureDatabase;
+	
+	UINT gestureCount = 0;
 	IGesture** pGestures;
-	UINT gestureCount;
+	Players players;
+	IBody* ppBodies[BODY_COUNT] = { nullptr };
 };

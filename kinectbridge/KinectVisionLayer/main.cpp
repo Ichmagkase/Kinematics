@@ -1,25 +1,30 @@
 #include "ipc.h"
-#include "sensor.h"
-#include "test.h"
 #include <iostream>
-#include "data.h"
+#include <string>
+#include <functional>
+#include <map>
+#include <Kinect.h>
+#include <Kinect.VisualGestureBuilder.h>
+#include "sensor.h"
+#include <windows.h>
 
 static IPC ipc;
 
-void GestureListener(struct Data data) {
-	std::cout << "Player " << data.player << " performed gesture: " << data.event << std::endl;
+void GestureListener(struct GestureData data) {
+	const std::string actions[] = { "move_jump", "attack_1", "attack_2", "move_right", "move_left", "block", "idle", "player1_ready", "player2_ready" };
+
+	std::cout << "Player " << data.player << " performed gesture: " << actions[data.event] << std::endl;
 	ipc.sendEventPayload(data);
 }
 
 int main() {
-	Sensor sensor;
-
-	// AWAIT PLAYERS READY ... Do this once to determine relative position
-	std::array<UINT64, 2> players;
-	players = sensor.awaitPlayersReady();
-
-	while (true) {
-		Sleep(1000); // Simulate waiting for sensor data
-		sensor.listen(&GestureListener, players);
-	}
+	std::cout << "initializing sensor..." << std::endl;
+	Sensor sensor(&GestureListener);
+	Sleep(30); //Allow extra time to initialize
+	std::cout << "waiting for players ..." << std::endl;
+	sensor.awaitPlayersReady();
+	std::cout << "listening for gestures" << std::endl;
+	// It would make alot more sense if you passed the ipc pipeline into listen for it to use, alas.
+	// This method is probably better for debugging anyway.
+	sensor.listen();
 }

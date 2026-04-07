@@ -2,16 +2,18 @@
 #include <string>
 #include <winsock2.h>
 #include <WS2tcpip.h>
-#include "data.h"
+#include "structures.h"
 
 class IPC {
 public:
 	IPC();
-	int sendEventPayload(struct Data e);
+	int sendEventPayload(struct GestureData e);
 	~IPC();
 
 private:
-	static const std::string actions[5];
+	static const std::string actions[9];
 	static SOCKET ipc_socket;
 	static sockaddr_in endpoint;
+	static Event lastPlayer1Event;
+	static Event lastPlayer2Event;
 };

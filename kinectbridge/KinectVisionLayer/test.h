@@ -1,2 +1,2 @@
 #pragma once
-struct Data getRandomData();
+struct GestureData getRandomData();
