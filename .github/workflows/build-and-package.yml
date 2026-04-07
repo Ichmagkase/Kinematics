@@ -15,6 +15,44 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
+              
+            - name: Download Kinect SDK v2.0
+              run: |
+                  $InstallerUrl = "https://download.microsoft.com/download/F/2/D/F2D1012E-3BC6-49C5-B8B3-5ACFF58AF7B8/KinectSDK-v2.0_1409-Setup.exe"
+                  $InstallerPath = "$env:TEMP\KinectSDK-v2.0_1409-Setup.exe"
+                  Invoke-WebRequest -Uri $InstallerUrl -OutFile $InstallerPath
+                  Write-Host "Downloaded Kinect SDK to $InstallerPath"
+        
+            - name: Install Kinect SDK v2.0 (Silent)
+              run: |
+                  $InstallerPath = "$env:TEMP\KinectSDK-v2.0_1409-Setup.exe"
+                  Write-Host "Starting silent installation..."
+                  
+                  # Run the executable and wait for the process to finish
+                  $process = Start-Process -FilePath $InstallerPath -ArgumentList "/quiet", "/norestart" -Wait -PassThru -NoNewWindow
+                  
+                  if ($process.ExitCode -ne 0) {
+                    Write-Error "Installation failed with exit code $($process.ExitCode)"
+                    exit 1
+                  }
+                  Write-Host "Installation process completed."
+        
+            - name: Verify Kinect SDK Installation
+              run: |
+                  $SdkPath = "C:\Program Files\Microsoft SDKs\Kinect\v2.0_1409"
+                  
+                  if (Test-Path $SdkPath) {
+                    Write-Host "Kinect SDK successfully verified at: $SdkPath"
+                    
+                    # Optional: Add the Kinect SDK path to the system environment variables so your build tools can find it
+                    echo "KINECTSDK20_DIR=$SdkPath" >> $env:GITHUB_ENV
+                  } else {
+                    Write-Error "Could not find the Kinect SDK installation directory."
+                    exit 1
+                  }
+
+            
+                  
 
             - name: Set up MSBuild to build Kinect bridge
               uses: microsoft/setup-msbuild@v3
