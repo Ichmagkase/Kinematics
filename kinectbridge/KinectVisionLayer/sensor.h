@@ -7,6 +7,8 @@
 typedef struct Players {
 	UINT64 player1_id = 0;
 	UINT64 player2_id = 0;
+	float player1_height = 0;
+	float player2_height = 0;
 	IVisualGestureBuilderFrameSource* player1_GestureSource;
 	IVisualGestureBuilderFrameReader* player1_GestureReader;
 	IVisualGestureBuilderFrameSource* player2_GestureSource;
@@ -15,10 +17,11 @@ typedef struct Players {
 
 class Sensor {
 public:
-	Sensor();
+	Sensor(void (*gestureListener)(struct GestureData));
 	~Sensor();
 	void awaitPlayersReady();
-	void listen(void (*gestureListener)(struct GestureData));
+	void listen();
+	void (*gestureListener)(struct GestureData);
 private:
 	void initialize();
 	void initializeSensor();

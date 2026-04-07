@@ -1,5 +1,6 @@
 #include "sensor.h"
 #include "util.h"
+#include "structures.h"
 #include <vector>
 #define GESTURE_NAME_SIZE 260
 // ----- INIT -----
@@ -25,7 +26,7 @@ void Sensor::initializeBody()
 
 void Sensor::initializeGesture() 
 {
-	ERROR_CHECK(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"gestures.gbd", &pGestureDatabase));
+	ERROR_CHECK(CreateVisualGestureBuilderDatabaseInstanceFromFile(L"gestures_updated.gbd", &pGestureDatabase));
 
 	ERROR_CHECK(pGestureDatabase->get_AvailableGesturesCount(&gestureCount));
 
@@ -73,6 +74,8 @@ void Sensor::updatePlayerBodies() {
 
 	// Dont zero these. We need to know if they are tracked from the last frame using these same IDs. 
 	// Keep booleans instead. Update later as necessary
+	IBody* player1 = nullptr;
+	IBody* player2 = nullptr;
 	bool isPlayer1Tracked = false;
 	bool isPlayer2Tracked = false;
 	std::vector<UINT64> tracked_nonplayers;
@@ -86,9 +89,11 @@ void Sensor::updatePlayerBodies() {
 				if (players.player1_id == trackingId) {
 					// we have identified this as player 1
 					isPlayer1Tracked = true;
+					player1 = ppBodies[i];
 				}
-				else if (players.player2_id == 0) {
+				else if (players.player2_id == trackingId) {
 					isPlayer2Tracked = true;
+					player2 = ppBodies[i];
 				}
 				else {
 					tracked_nonplayers.push_back(trackingId);
@@ -117,6 +122,28 @@ void Sensor::updatePlayerBodies() {
 		}
 	}
 
+	if (player1) {
+		Joint player1_joints[JointType_Count] = {};
+		if (FAILED(player1->GetJoints(JointType_Count, player1_joints))) {
+			std::cerr << "Failed to get joints for player 1" << std::endl;
+		}
+		float player1_y = player1_joints[JointType_Head].Position.Y;
+		if (player1_y > players.player1_height + 0.20f) {
+			gestureListener({ Event::JUMP, "1" });
+		}
+	}
+	
+	if (player2) {
+		Joint player2_joints[JointType_Count] = {};
+		if (FAILED(player2->GetJoints(JointType_Count, player2_joints))) {
+			std::cerr << "Failed to get joints for player 2" << std::endl;
+		}
+		float player2_y = player2_joints[JointType_Head].Position.Y;
+		if (player2_y > players.player2_height + 0.20f) {
+			gestureListener({ Event::JUMP, "1" });
+		}
+	}
+	
 	players.player1_GestureSource->put_TrackingId(players.player1_id);
 	players.player2_GestureSource->put_TrackingId(players.player2_id);
 }
@@ -126,7 +153,7 @@ void Sensor::updatePlayerGestures() {
 	for (int i = 0; i < 2; ++i) {
 		IVisualGestureBuilderFrame* pGestureFrame = nullptr;
 		activePlayers[i]->CalculateAndAcquireLatestFrame(&pGestureFrame);
-		
+
 		if (pGestureFrame) {
 			BOOLEAN isPlayer1TrackingIdValid = false;
 			pGestureFrame->get_IsTrackingIdValid(&isPlayer1TrackingIdValid);
@@ -164,21 +191,33 @@ void Sensor::updatePlayerGestures() {
 					std::wstring ws(gestureNameW);
 					std::string gestureNameStr(ws.begin(), ws.end());
 
-					// 4. Print using the exact same std::cout you use everywhere else
-					std::cout << "\nDetected gesture: " << gestureNameStr << " (Confidence: " << confidence << ")\n";
+					if (gestureNameStr == "punch_Left") {
+						gestureListener({ Event::PUNCH_L, std::to_string(i + 1) });
+					}
+					else if (gestureNameStr == "punch_Right") {
+						gestureListener({ Event::PUNCH_R, std::to_string(i + 1) });
+					}
+					else if (gestureNameStr == "move_Right") {
+						gestureListener({ Event::MOVE_R, std::to_string(i + 1) });
+					}
+					else if (gestureNameStr == "move_Left") {
+						gestureListener({ Event::MOVE_L, std::to_string(i + 1) });
+					}
+					else if (gestureNameStr == "block") {
+						gestureListener({ Event::BLOCK, std::to_string(i + 1) });
+					}
 
+					// 4. Print using the exact same std::cout you use everywhere else
 					gesturing = true;
 				}
 				pGestureResult->Release();
 			}
 
 			if (!gesturing) {
-				std::cout << "Player" << i + 1 << "idle:  " << std::endl;
+				gestureListener({ Event::IDLE, std::to_string(i + 1) });
 			}
-
 			pGestureFrame->Release();
 		}
-		
 	}
 }
 
@@ -223,12 +262,14 @@ void Sensor::awaitPlayersReady() {
 		std::cerr << "Failed to get joints for player 1" << std::endl;
 	}
 	float player1_head_x = player1_joints[JointType_Head].Position.X;
+	players.player1_height = player1_joints[JointType_Head].Position.Y;
 
 	Joint player2_joints[JointType_Count] = {};
 	if (FAILED(player2->GetJoints(JointType_Count, player2_joints))) {
 		std::cerr << "Failed to get joints for player 2" << std::endl;
 	}
 	float player2_head_x = player2_joints[JointType_Head].Position.X;
+	players.player2_height = player2_joints[JointType_Head].Position.Y;
 
 	// Sort left most player (rightmost from camera perspective) to be first
 	if (player1_head_x < player2_head_x) {
@@ -239,12 +280,16 @@ void Sensor::awaitPlayersReady() {
 		player1->get_TrackingId(&players.player2_id); 
 		player2->get_TrackingId(&players.player1_id);
 	}
+
+	// gestureListener({ Event::P1_READY, "1" });
+	// gestureListener({ Event::P2_READY, "2" });
 }
 
 // ----- RUN -----
 
-Sensor::Sensor()
+Sensor::Sensor(void (*gestureListener)(struct GestureData))
 {
+	this->gestureListener = gestureListener;
 	initialize();
 }
 
@@ -268,7 +313,7 @@ Sensor::~Sensor()
 	kinect->Close();
 }
 
-void Sensor::listen(void (*gestureListener)(struct GestureData))
+void Sensor::listen()
 {
 	while (true) {
 		update();

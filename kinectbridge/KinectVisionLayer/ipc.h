@@ -11,7 +11,9 @@ public:
 	~IPC();
 
 private:
-	static const std::string actions[5];
+	static const std::string actions[9];
 	static SOCKET ipc_socket;
 	static sockaddr_in endpoint;
+	static Event lastPlayer1Event;
+	static Event lastPlayer2Event;
 };

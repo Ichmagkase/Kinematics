@@ -46,8 +46,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\..\..\Downloads\gestures.gbd">
+    <None Include="..\..\..\..\..\..\Downloads\gestures_updated.gbd">
       <Filter>Resource Files</Filter>
-    </CopyFileToFolders>
+    </None>
   </ItemGroup>
 </Project>
